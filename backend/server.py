@@ -458,6 +458,109 @@ async def delete_product(product_id: str):
         raise HTTPException(status_code=404, detail="Product not found")
     return {"message": "Product deleted successfully"}
 
+# Brand routes
+@api_router.get("/brands", response_model=List[Brand])
+async def get_brands(
+    featured: Optional[bool] = None,
+    limit: int = Query(default=20, le=100),
+    skip: int = Query(default=0, ge=0)
+):
+    filter_dict = {}
+    if featured is not None:
+        filter_dict["featured"] = featured
+    
+    brands = await db.brands.find(filter_dict).skip(skip).limit(limit).to_list(limit)
+    return [Brand(**brand) for brand in brands]
+
+@api_router.get("/brands/{brand_id}", response_model=Brand)
+async def get_brand(brand_id: str):
+    brand = await db.brands.find_one({"id": brand_id})
+    if not brand:
+        raise HTTPException(status_code=404, detail="Brand not found")
+    return Brand(**brand)
+
+@api_router.post("/brands", response_model=Brand)
+async def create_brand(brand: BrandCreate):
+    brand_dict = brand.dict()
+    brand_obj = Brand(**brand_dict)
+    await db.brands.insert_one(brand_obj.dict())
+    return brand_obj
+
+@api_router.get("/brands/{brand_id}/products", response_model=List[Product])
+async def get_brand_products(
+    brand_id: str,
+    limit: int = Query(default=20, le=100),
+    skip: int = Query(default=0, ge=0)
+):
+    products = await db.products.find({"brand_id": brand_id}).skip(skip).limit(limit).to_list(limit)
+    return [Product(**product) for product in products]
+
+# Review routes
+@api_router.get("/products/{product_id}/reviews", response_model=List[Review])
+async def get_product_reviews(
+    product_id: str,
+    limit: int = Query(default=20, le=100),
+    skip: int = Query(default=0, ge=0)
+):
+    reviews = await db.reviews.find({"product_id": product_id}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    return [Review(**review) for review in reviews]
+
+@api_router.post("/products/{product_id}/reviews", response_model=Review)
+async def create_review(product_id: str, review: ReviewCreate):
+    # Verify product exists
+    product = await db.products.find_one({"id": product_id})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    review_dict = review.dict()
+    review_dict["product_id"] = product_id
+    review_obj = Review(**review_dict)
+    await db.reviews.insert_one(review_obj.dict())
+    
+    # Update product rating statistics
+    await update_product_rating_stats(product_id)
+    
+    return review_obj
+
+@api_router.put("/reviews/{review_id}/helpful")
+async def mark_review_helpful(review_id: str):
+    result = await db.reviews.update_one(
+        {"id": review_id},
+        {"$inc": {"helpful_count": 1}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Review not found")
+    return {"message": "Review marked as helpful"}
+
+async def update_product_rating_stats(product_id: str):
+    """Update product's average rating and review count"""
+    # Calculate average rating
+    pipeline = [
+        {"$match": {"product_id": product_id}},
+        {"$group": {
+            "_id": None,
+            "avg_rating": {"$avg": "$rating"},
+            "review_count": {"$sum": 1}
+        }}
+    ]
+    
+    result = await db.reviews.aggregate(pipeline).to_list(1)
+    if result:
+        stats = result[0]
+        await db.products.update_one(
+            {"id": product_id},
+            {"$set": {
+                "average_rating": round(stats["avg_rating"], 1),
+                "review_count": stats["review_count"]
+            }}
+        )
+
+@api_router.get("/reviews/recent", response_model=List[Review])
+async def get_recent_reviews(limit: int = Query(default=10, le=50)):
+    """Get recent reviews across all products"""
+    reviews = await db.reviews.find({}).sort("created_at", -1).limit(limit).to_list(limit)
+    return [Review(**review) for review in reviews]
+
 # Cart routes
 @api_router.get("/cart/{session_id}", response_model=List[CartItem])
 async def get_cart(session_id: str):
