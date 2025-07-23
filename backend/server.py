@@ -106,11 +106,22 @@ class Product(BaseModel):
     description: str
     price: float
     category: ClothingCategory
+    brand_id: Optional[str] = None
+    brand_name: Optional[str] = None
     sizes: List[Size]
     colors: List[str]
     images: List[str]
     stock_quantity: int = 0
     featured: bool = False
+    tags: List[str] = Field(default_factory=list)
+    materials: List[str] = Field(default_factory=list)
+    care_instructions: Optional[str] = None
+    average_rating: float = 0.0
+    review_count: int = 0
+    view_count: int = 0
+    purchase_count: int = 0
+    wishlist_count: int = 0
+    discount_percentage: Optional[float] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class ProductCreate(BaseModel):
@@ -118,11 +129,17 @@ class ProductCreate(BaseModel):
     description: str
     price: float
     category: ClothingCategory
+    brand_id: Optional[str] = None
+    brand_name: Optional[str] = None
     sizes: List[Size]
     colors: List[str]
     images: List[str]
     stock_quantity: int = 0
     featured: bool = False
+    tags: List[str] = Field(default_factory=list)
+    materials: List[str] = Field(default_factory=list)
+    care_instructions: Optional[str] = None
+    discount_percentage: Optional[float] = None
 
 class CartItem(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
