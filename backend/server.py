@@ -156,6 +156,37 @@ class CartItemCreate(BaseModel):
     quantity: int = 1
     session_id: str
 
+class ReviewCreate(BaseModel):
+    product_id: str
+    user_name: str
+    user_email: str
+    rating: ReviewRating
+    title: str
+    comment: str
+    images: List[str] = Field(default_factory=list)
+
+class BrandCreate(BaseModel):
+    name: str
+    description: str
+    logo_url: str
+    brand_story: str
+    featured: bool = False
+    founded_year: Optional[int] = None
+    website_url: Optional[str] = None
+    social_links: Dict[str, str] = Field(default_factory=dict)
+
+class SearchQuery(BaseModel):
+    query: str
+    category: Optional[ClothingCategory] = None
+    brand_id: Optional[str] = None
+    min_price: Optional[float] = None
+    max_price: Optional[float] = None
+    sizes: List[Size] = Field(default_factory=list)
+    colors: List[str] = Field(default_factory=list)
+    sort_by: Optional[str] = "relevance"  # relevance, price_low, price_high, rating, newest
+    limit: int = 20
+    skip: int = 0
+
 class Order(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     session_id: str
