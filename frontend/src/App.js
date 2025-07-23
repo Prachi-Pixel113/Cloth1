@@ -100,293 +100,384 @@ const useCart = () => {
   return context;
 };
 
-// Mobile-first Header Component
+// Myntra-style Header
 const Header = ({ currentView, setCurrentView }) => {
   const { cartTotal } = useCart();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
-      <div className="px-4 py-3">
-        <div className="flex items-center justify-between">
+    <header className="bg-white border-b shadow-sm sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto">
+        {/* Main Header */}
+        <div className="flex items-center justify-between px-4 py-3">
           {/* Logo */}
           <div className="flex items-center">
             <h1 
-              className="text-xl font-bold text-gray-900 cursor-pointer"
+              className="text-2xl font-bold text-pink-600 cursor-pointer"
               onClick={() => setCurrentView('home')}
             >
               StyleHub
             </h1>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          {/* Main Navigation - Desktop */}
+          <nav className="hidden lg:flex items-center space-x-8">
             <button 
-              className={`text-sm font-medium transition-colors ${
-                currentView === 'home' ? 'text-black' : 'text-gray-600 hover:text-black'
-              }`}
-              onClick={() => setCurrentView('home')}
+              className="text-sm font-bold text-gray-800 hover:text-pink-600 transition-colors tracking-wide"
+              onClick={() => setCurrentView('men')}
             >
-              Home
+              MEN
             </button>
             <button 
-              className={`text-sm font-medium transition-colors ${
-                currentView === 'products' ? 'text-black' : 'text-gray-600 hover:text-black'
-              }`}
-              onClick={() => setCurrentView('products')}
+              className="text-sm font-bold text-gray-800 hover:text-pink-600 transition-colors tracking-wide"
+              onClick={() => setCurrentView('women')}
             >
-              Shop
+              WOMEN
             </button>
             <button 
-              className={`text-sm font-medium transition-colors ${
-                currentView === 'about' ? 'text-black' : 'text-gray-600 hover:text-black'
-              }`}
-              onClick={() => setCurrentView('about')}
+              className="text-sm font-bold text-gray-800 hover:text-pink-600 transition-colors tracking-wide"
+              onClick={() => setCurrentView('kids')}
             >
-              About
+              KIDS
+            </button>
+            <button 
+              className="text-sm font-bold text-gray-800 hover:text-pink-600 transition-colors tracking-wide"
+              onClick={() => setCurrentView('home-living')}
+            >
+              HOME & LIVING
+            </button>
+            <button 
+              className="text-sm font-bold text-gray-800 hover:text-pink-600 transition-colors tracking-wide"
+              onClick={() => setCurrentView('beauty')}
+            >
+              BEAUTY
             </button>
           </nav>
 
-          {/* Cart and Mobile Menu */}
-          <div className="flex items-center space-x-4">
-            {/* Cart Button */}
-            <button 
-              className="relative"
+          {/* Search Bar */}
+          <div className={`hidden md:flex items-center border-2 rounded-sm transition-colors ${
+            isSearchFocused ? 'border-pink-500' : 'border-gray-200'
+          }`}>
+            <div className="flex items-center px-3 py-2 bg-gray-50">
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Search for products, brands and more"
+              className="px-3 py-2 w-80 text-sm bg-gray-50 focus:outline-none"
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
+            />
+          </div>
+
+          {/* User Actions */}
+          <div className="flex items-center space-x-6">
+            {/* Profile */}
+            <div className="hidden md:flex flex-col items-center cursor-pointer group">
+              <svg className="w-5 h-5 text-gray-700 group-hover:text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <span className="text-xs text-gray-700 group-hover:text-pink-600 font-medium">Profile</span>
+            </div>
+
+            {/* Wishlist */}
+            <div className="hidden md:flex flex-col items-center cursor-pointer group">
+              <svg className="w-5 h-5 text-gray-700 group-hover:text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              <span className="text-xs text-gray-700 group-hover:text-pink-600 font-medium">Wishlist</span>
+            </div>
+
+            {/* Bag */}
+            <div 
+              className="flex flex-col items-center cursor-pointer group"
               onClick={() => setCurrentView('cart')}
             >
-              <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M8 11h8l1 9H7l1-9z" />
-              </svg>
-              {cartTotal > 0 && (
-                <span className="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {cartTotal}
-                </span>
-              )}
-            </button>
-
-            {/* Mobile Menu Button */}
-            <button 
-              className="md:hidden"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {isMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <div className="relative">
+                <svg className="w-5 h-5 text-gray-700 group-hover:text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M8 11h8l1 9H7l1-9z" />
+                </svg>
+                {cartTotal > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-pink-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                    {cartTotal}
+                  </span>
                 )}
-              </svg>
-            </button>
+              </div>
+              <span className="text-xs text-gray-700 group-hover:text-pink-600 font-medium">Bag</span>
+            </div>
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 space-y-4">
-            <button 
-              className="block w-full text-left text-gray-600 hover:text-black"
-              onClick={() => {
-                setCurrentView('home');
-                setIsMenuOpen(false);
-              }}
-            >
-              Home
-            </button>
-            <button 
-              className="block w-full text-left text-gray-600 hover:text-black"
-              onClick={() => {
-                setCurrentView('products');
-                setIsMenuOpen(false);
-              }}
-            >
-              Shop
-            </button>
-            <button 
-              className="block w-full text-left text-gray-600 hover:text-black"
-              onClick={() => {
-                setCurrentView('about');
-                setIsMenuOpen(false);
-              }}
-            >
-              About
-            </button>
+        {/* Mobile Navigation */}
+        <div className="lg:hidden px-4 pb-3">
+          <div className="flex overflow-x-auto space-x-6 text-sm font-medium">
+            <button className="text-gray-800 whitespace-nowrap" onClick={() => setCurrentView('men')}>MEN</button>
+            <button className="text-gray-800 whitespace-nowrap" onClick={() => setCurrentView('women')}>WOMEN</button>
+            <button className="text-gray-800 whitespace-nowrap" onClick={() => setCurrentView('kids')}>KIDS</button>
+            <button className="text-gray-800 whitespace-nowrap" onClick={() => setCurrentView('home-living')}>HOME</button>
+            <button className="text-gray-800 whitespace-nowrap" onClick={() => setCurrentView('beauty')}>BEAUTY</button>
           </div>
-        )}
+        </div>
       </div>
     </header>
   );
 };
 
-// Mobile-first Hero Section
-const Hero = () => {
+// Hero Banner Section
+const HeroBanners = () => {
+  const banners = [
+    {
+      id: 1,
+      image: "https://images.unsplash.com/photo-1445205170230-053b83016050?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwzfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85",
+      title: "BIGGEST FASHION SALE",
+      subtitle: "UP TO 70% OFF",
+      cta: "SHOP NOW"
+    }
+  ];
+
   return (
-    <div className="relative bg-white">
-      {/* Mobile-first layout */}
-      <div className="px-4 py-8 md:py-16">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            {/* Content */}
-            <div className="text-center lg:text-left">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
-                Discover Fashion That Speaks To You
-              </h1>
-              <p className="text-gray-600 text-lg mb-6 max-w-lg mx-auto lg:mx-0">
-                Explore our curated collection of premium clothing designed for the modern fashion enthusiast.
-              </p>
-              <button 
-                className="bg-black text-white px-8 py-3 text-sm font-medium hover:bg-gray-800 transition-colors"
-                onClick={() => window.scrollTo({ top: 600, behavior: 'smooth' })}
-              >
-                SHOP NOW
+    <div className="w-full">
+      {banners.map(banner => (
+        <div key={banner.id} className="relative">
+          <img 
+            src={banner.image} 
+            alt={banner.title}
+            className="w-full h-60 md:h-80 lg:h-96 object-cover"
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+            <div className="text-center text-white">
+              <h2 className="text-2xl md:text-4xl font-bold mb-2">{banner.title}</h2>
+              <p className="text-lg md:text-2xl mb-4">{banner.subtitle}</p>
+              <button className="bg-pink-600 text-white px-6 py-3 font-bold text-sm hover:bg-pink-700 transition-colors">
+                {banner.cta}
               </button>
             </div>
-            
-            {/* Hero Image */}
-            <div className="order-first lg:order-last">
-              <img 
-                src="https://images.unsplash.com/photo-1445205170230-053b83016050?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwzfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85"
-                alt="Fashion Collection"
-                className="w-full h-64 md:h-80 lg:h-96 object-cover"
-              />
-            </div>
           </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// Category Section
+const CategorySection = ({ title, categories }) => {
+  return (
+    <div className="py-8">
+      <div className="max-w-7xl mx-auto px-4">
+        <h2 className="text-xl md:text-2xl font-bold text-center mb-6 text-gray-800">{title}</h2>
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+          {categories.map((category, index) => (
+            <div key={index} className="text-center cursor-pointer group">
+              <div className="w-full aspect-square rounded-full overflow-hidden mb-2 group-hover:scale-105 transition-transform">
+                <img 
+                  src={category.image} 
+                  alt={category.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <p className="text-xs md:text-sm font-medium text-gray-700">{category.name}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
 };
 
-// Mobile-first Product Card
+// Deals Section
+const DealsSection = () => {
+  return (
+    <div className="bg-yellow-50 py-8">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">DEALS OF THE DAY</h2>
+          <p className="text-gray-600">Limited Time Offers</p>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { discount: "40-70% OFF", category: "Shirts", image: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
+            { discount: "50-80% OFF", category: "Dresses", image: "https://images.unsplash.com/photo-1568252542512-9fe8fe9c87bb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwyfHxmYXNoaW9uJTIwbW9kZWx8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" },
+            { discount: "30-60% OFF", category: "Sportswear", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwzfHxmYXNoaW9uJTIwbW9kZWl8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" },
+            { discount: "25-50% OFF", category: "Jeans", image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwyfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" }
+          ].map((deal, index) => (
+            <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow">
+              <img src={deal.image} alt={deal.category} className="w-full h-32 md:h-40 object-cover" />
+              <div className="p-3 text-center">
+                <p className="font-bold text-pink-600 text-sm md:text-base">{deal.discount}</p>
+                <p className="text-xs md:text-sm text-gray-700">{deal.category}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Product Card - Myntra Style
 const ProductCard = ({ product, onViewDetails }) => {
   const { addToCart } = useCart();
   const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
-  const [showOptions, setShowOptions] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
     addToCart(product.id, selectedSize, selectedColor, 1);
-    alert('Added to cart!');
+    alert('Added to bag!');
   };
 
+  const discountPrice = (product.price * 0.8).toFixed(2);
+  const discountPercent = 20;
+
   return (
-    <div className="bg-white">
+    <div 
+      className="bg-white cursor-pointer group"
+      onClick={() => onViewDetails(product)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {/* Product Image */}
-      <div 
-        className="relative aspect-[3/4] cursor-pointer group"
-        onClick={() => onViewDetails(product)}
-      >
+      <div className="relative overflow-hidden">
         <img 
           src={product.images[0]} 
           alt={product.name}
-          className="w-full h-full object-cover"
+          className="w-full aspect-[3/4] object-cover group-hover:scale-105 transition-transform duration-300"
         />
         {product.featured && (
-          <span className="absolute top-2 left-2 bg-black text-white px-2 py-1 text-xs">
-            FEATURED
-          </span>
+          <div className="absolute top-2 left-2">
+            <span className="bg-pink-600 text-white px-2 py-1 text-xs font-bold">BESTSELLER</span>
+          </div>
         )}
-        {/* Quick Add Button - Desktop only */}
-        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 hidden md:flex items-end justify-center pb-4">
-          <button 
-            onClick={handleAddToCart}
-            className="bg-white text-black px-6 py-2 text-sm font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0"
-          >
-            QUICK ADD
+        <div className="absolute top-2 right-2">
+          <button className="bg-white rounded-full p-1 shadow-md hover:bg-pink-50">
+            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
           </button>
         </div>
+        
+        {/* Quick View on Hover */}
+        {isHovered && (
+          <div className="absolute inset-0 bg-black bg-opacity-20 flex items-end justify-center pb-4">
+            <button 
+              onClick={handleAddToCart}
+              className="bg-white text-gray-800 px-6 py-2 text-sm font-medium hover:bg-gray-100 transition-colors"
+            >
+              ADD TO BAG
+            </button>
+          </div>
+        )}
       </div>
       
       {/* Product Info */}
-      <div className="py-3">
-        <h3 className="text-sm font-medium text-gray-900 mb-1 line-clamp-2">{product.name}</h3>
-        <p className="text-sm text-gray-500 mb-2">${product.price}</p>
+      <div className="p-3">
+        <h3 className="font-bold text-gray-800 text-sm mb-1 line-clamp-1">{product.name.split(' ')[0]}</h3>
+        <p className="text-xs text-gray-500 mb-2 line-clamp-1">{product.name}</p>
         
-        {/* Color options */}
-        <div className="flex space-x-1 mb-3">
-          {product.colors.slice(0, 4).map((color, index) => (
-            <div 
-              key={index}
-              className={`w-4 h-4 rounded-full border border-gray-200 ${
-                color.toLowerCase() === 'white' ? 'bg-white' :
-                color.toLowerCase() === 'black' ? 'bg-black' :
-                color.toLowerCase() === 'blue' ? 'bg-blue-500' :
-                color.toLowerCase() === 'red' ? 'bg-red-500' :
-                color.toLowerCase() === 'yellow' ? 'bg-yellow-500' :
-                color.toLowerCase() === 'green' ? 'bg-green-500' :
-                color.toLowerCase() === 'pink' ? 'bg-pink-500' :
-                color.toLowerCase() === 'purple' ? 'bg-purple-500' :
-                color.toLowerCase() === 'gray' ? 'bg-gray-500' :
-                color.toLowerCase() === 'navy' ? 'bg-blue-900' :
-                color.toLowerCase() === 'maroon' ? 'bg-red-900' :
-                'bg-gray-300'
-              }`}
-              title={color}
-            />
-          ))}
+        <div className="flex items-center space-x-2 mb-2">
+          <span className="font-bold text-gray-800">₹{discountPrice}</span>
+          <span className="text-xs text-gray-400 line-through">₹{product.price}</span>
+          <span className="text-xs text-orange-600 font-medium">({discountPercent}% OFF)</span>
         </div>
-
-        {/* Mobile Add to Cart */}
-        <div className="md:hidden">
-          <button 
-            onClick={() => setShowOptions(!showOptions)}
-            className="w-full bg-black text-white py-2 text-sm font-medium"
-          >
-            ADD TO CART
-          </button>
-          
-          {showOptions && (
-            <div className="mt-2 space-y-2">
-              <select 
-                value={selectedSize} 
-                onChange={(e) => setSelectedSize(e.target.value)}
-                className="w-full border border-gray-300 px-3 py-2 text-sm"
-              >
-                {product.sizes.map(size => (
-                  <option key={size} value={size}>{size}</option>
-                ))}
-              </select>
-              <select 
-                value={selectedColor} 
-                onChange={(e) => setSelectedColor(e.target.value)}
-                className="w-full border border-gray-300 px-3 py-2 text-sm"
-              >
-                {product.colors.map(color => (
-                  <option key={color} value={color}>{color}</option>
-                ))}
-              </select>
-              <button 
-                onClick={handleAddToCart}
-                className="w-full bg-gray-900 text-white py-2 text-sm font-medium"
-              >
-                CONFIRM ADD TO CART
-              </button>
-            </div>
-          )}
+        
+        {/* Rating */}
+        <div className="flex items-center space-x-1">
+          <div className="flex items-center bg-green-600 text-white px-1 py-0.5 rounded text-xs">
+            <span>4.2</span>
+            <svg className="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          </div>
+          <span className="text-xs text-gray-500">(1.2k)</span>
         </div>
       </div>
     </div>
   );
 };
 
-// Product Modal (unchanged functionality, updated styling)
+// Products Section - Myntra Style
+const ProductsSection = ({ title = "TRENDING NOW", filter = null }) => {
+  const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [filter]);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      let url = `${API}/products`;
+      if (filter) {
+        url += `?category=${filter}`;
+      }
+      const response = await axios.get(url);
+      setProducts(response.data);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center">Loading products...</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="py-8">
+      <div className="max-w-7xl mx-auto px-4">
+        <h2 className="text-xl md:text-2xl font-bold text-center mb-6 text-gray-800">{title}</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {products.slice(0, 10).map(product => (
+            <ProductCard 
+              key={product.id} 
+              product={product} 
+              onViewDetails={setSelectedProduct}
+            />
+          ))}
+        </div>
+        
+        {/* View All Button */}
+        <div className="text-center mt-8">
+          <button className="border-2 border-pink-600 text-pink-600 px-8 py-2 font-bold text-sm hover:bg-pink-600 hover:text-white transition-colors">
+            VIEW ALL
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Product Modal (simplified for Myntra style)
 const ProductModal = ({ product, onClose }) => {
   const { addToCart } = useCart();
   const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
-  const [quantity, setQuantity] = useState(1);
 
   const handleAddToCart = () => {
-    addToCart(product.id, selectedSize, selectedColor, quantity);
-    alert('Added to cart!');
+    addToCart(product.id, selectedSize, selectedColor, 1);
+    alert('Added to bag!');
     onClose();
   };
+
+  const discountPrice = (product.price * 0.8).toFixed(2);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white max-w-4xl w-full max-h-90vh overflow-y-auto">
         <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-lg font-medium">{product.name}</h2>
+          <h2 className="text-lg font-bold">{product.name}</h2>
           <button 
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -406,25 +497,37 @@ const ProductModal = ({ product, onClose }) => {
             </div>
             
             <div>
+              <h3 className="font-bold text-xl mb-2">{product.name}</h3>
               <p className="text-gray-600 mb-4 text-sm">{product.description}</p>
-              <div className="text-2xl font-medium text-gray-900 mb-6">${product.price}</div>
+              
+              <div className="flex items-center space-x-3 mb-6">
+                <span className="text-2xl font-bold">₹{discountPrice}</span>
+                <span className="text-lg text-gray-400 line-through">₹{product.price}</span>
+                <span className="text-orange-600 font-medium">(20% OFF)</span>
+              </div>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-2">Size</label>
-                  <select 
-                    value={selectedSize} 
-                    onChange={(e) => setSelectedSize(e.target.value)}
-                    className="w-full border border-gray-300 px-3 py-2 text-sm"
-                  >
+                  <label className="block text-sm font-bold text-gray-800 mb-2">SELECT SIZE</label>
+                  <div className="flex space-x-2">
                     {product.sizes.map(size => (
-                      <option key={size} value={size}>{size}</option>
+                      <button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        className={`w-12 h-12 border-2 font-medium text-sm ${
+                          selectedSize === size
+                            ? 'border-pink-600 text-pink-600'
+                            : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                        }`}
+                      >
+                        {size}
+                      </button>
                     ))}
-                  </select>
+                  </div>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-2">Color</label>
+                  <label className="block text-sm font-bold text-gray-800 mb-2">COLOR</label>
                   <select 
                     value={selectedColor} 
                     onChange={(e) => setSelectedColor(e.target.value)}
@@ -436,28 +539,12 @@ const ProductModal = ({ product, onClose }) => {
                   </select>
                 </div>
                 
-                <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-2">Quantity</label>
-                  <input 
-                    type="number" 
-                    min="1" 
-                    max={product.stock_quantity}
-                    value={quantity}
-                    onChange={(e) => setQuantity(parseInt(e.target.value))}
-                    className="w-full border border-gray-300 px-3 py-2 text-sm"
-                  />
-                </div>
-                
                 <button 
                   onClick={handleAddToCart}
-                  className="w-full bg-black text-white py-3 text-sm font-medium hover:bg-gray-800 transition-colors"
+                  className="w-full bg-pink-600 text-white py-3 font-bold text-sm hover:bg-pink-700 transition-colors"
                 >
-                  ADD TO CART
+                  ADD TO BAG
                 </button>
-              </div>
-              
-              <div className="mt-6 text-sm text-gray-500">
-                {product.stock_quantity} items in stock
               </div>
             </div>
           </div>
@@ -467,118 +554,33 @@ const ProductModal = ({ product, onClose }) => {
   );
 };
 
-// Mobile-first Products Section
-const ProductsSection = () => {
-  const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [loading, setLoading] = useState(true);
-
-  const categories = [
-    { value: 'all', label: 'All' },
-    { value: 'formal_wear', label: 'Formal' },
-    { value: 'womens_dresses', label: 'Dresses' },
-    { value: 'sportswear', label: 'Sport' },
-    { value: 'mens_pants', label: 'Pants' },
-    { value: 'womens_tops', label: 'Tops' },
-    { value: 'casual_wear', label: 'Casual' }
+// Homepage Component
+const Homepage = () => {
+  const categoryData = [
+    { name: "Shirts", image: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
+    { name: "Dresses", image: "https://images.unsplash.com/photo-1568252542512-9fe8fe9c87bb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwyfHxmYXNoaW9uJTIwbW9kZWx8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" },
+    { name: "Jeans", image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwyfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
+    { name: "Sportswear", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwzfHxmYXNoaW9uJTIwbW9kZWl8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" },
+    { name: "Formal", image: "https://images.unsplash.com/photo-1562572159-4efc207f5aff?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwbW9kZWx8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" },
+    { name: "Casual", image: "https://images.unsplash.com/photo-1445205170230-053b83016050?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwzfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" }
   ];
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  useEffect(() => {
-    if (selectedCategory === 'all') {
-      setFilteredProducts(products);
-    } else {
-      setFilteredProducts(products.filter(product => product.category === selectedCategory));
-    }
-  }, [products, selectedCategory]);
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`${API}/products`);
-      setProducts(response.data);
-      setFilteredProducts(response.data);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="px-4 py-8">
-        <div className="text-center text-sm text-gray-500">Loading products...</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="px-4 py-8">
-      <div className="max-w-6xl mx-auto">
-        {/* Section Header */}
-        <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Shop</h2>
-          <p className="text-gray-600 text-sm">Discover our carefully curated collection</p>
-        </div>
-
-        {/* Category Filter - Horizontal scroll on mobile */}
-        <div className="mb-8">
-          <div className="flex overflow-x-auto space-x-2 pb-2 scrollbar-hide">
-            {categories.map(category => (
-              <button
-                key={category.value}
-                onClick={() => setSelectedCategory(category.value)}
-                className={`flex-shrink-0 px-4 py-2 text-sm font-medium transition-colors ${
-                  selectedCategory === category.value
-                    ? 'bg-black text-white'
-                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
-                }`}
-              >
-                {category.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Products Grid - Mobile-first responsive */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          {filteredProducts.map(product => (
-            <ProductCard 
-              key={product.id} 
-              product={product} 
-              onViewDetails={setSelectedProduct}
-            />
-          ))}
-        </div>
-
-        {selectedProduct && (
-          <ProductModal 
-            product={selectedProduct} 
-            onClose={() => setSelectedProduct(null)}
-          />
-        )}
-      </div>
+    <div>
+      <HeroBanners />
+      <CategorySection title="SHOP BY CATEGORY" categories={categoryData} />
+      <DealsSection />
+      <ProductsSection title="TRENDING NOW" />
+      <ProductsSection title="FEATURED PRODUCTS" filter="featured" />
     </div>
   );
 };
 
-// Mobile-first Cart Page
+// Cart Page - Myntra Style
 const CartPage = () => {
   const { cartItems, updateCartItem, removeFromCart, sessionId } = useCart();
   const [products, setProducts] = useState({});
   const [loading, setLoading] = useState(true);
-  const [checkoutForm, setCheckoutForm] = useState({
-    customer_name: '',
-    customer_email: '',
-    shipping_address: ''
-  });
-  const [showCheckout, setShowCheckout] = useState(false);
 
   useEffect(() => {
     fetchProductDetails();
@@ -611,171 +613,152 @@ const CartPage = () => {
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => {
       const product = products[item.product_id];
+      const discountPrice = product ? product.price * 0.8 : 0;
+      return total + (discountPrice * item.quantity);
+    }, 0).toFixed(2);
+  };
+
+  const calculateOriginalTotal = () => {
+    return cartItems.reduce((total, item) => {
+      const product = products[item.product_id];
       return total + (product ? product.price * item.quantity : 0);
     }, 0).toFixed(2);
   };
 
-  const handleCheckout = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(`${API}/orders`, {
-        ...checkoutForm,
-        session_id: sessionId
-      });
-      alert('Order placed successfully!');
-      setShowCheckout(false);
-      window.location.reload();
-    } catch (error) {
-      console.error('Error placing order:', error);
-      alert('Error placing order. Please try again.');
-    }
-  };
-
   if (loading) {
     return (
-      <div className="px-4 py-8">
-        <div className="text-center text-sm text-gray-500">Loading cart...</div>
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="text-center">Loading your bag...</div>
       </div>
     );
   }
 
   if (cartItems.length === 0) {
     return (
-      <div className="px-4 py-16">
-        <div className="max-w-md mx-auto text-center">
-          <h2 className="text-xl font-medium text-gray-900 mb-4">Your bag is empty</h2>
-          <p className="text-gray-600 text-sm mb-8">Add some amazing products to get started!</p>
-          <button 
-            onClick={() => window.location.reload()}
-            className="bg-black text-white px-6 py-3 text-sm font-medium"
-          >
-            CONTINUE SHOPPING
-          </button>
+      <div className="max-w-6xl mx-auto px-4 py-16 text-center">
+        <div className="mb-8">
+          <svg className="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M8 11h8l1 9H7l1-9z" />
+          </svg>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Your bag is empty</h2>
+          <p className="text-gray-600">Add some amazing products to get started!</p>
         </div>
+        <button 
+          onClick={() => window.location.reload()}
+          className="bg-pink-600 text-white px-8 py-3 font-bold text-sm hover:bg-pink-700 transition-colors"
+        >
+          START SHOPPING
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-xl font-medium text-gray-900 mb-6">Shopping Bag ({cartItems.length})</h2>
-        
-        <div className="space-y-4 mb-8">
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-8">Shopping Bag ({cartItems.length} items)</h1>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Cart Items */}
+        <div className="lg:col-span-2">
           {cartItems.map(item => {
             const product = products[item.product_id];
             if (!product) return null;
             
+            const discountPrice = (product.price * 0.8).toFixed(2);
+            
             return (
-              <div key={item.id} className="flex space-x-4 py-4 border-b border-gray-100">
+              <div key={item.id} className="flex space-x-4 p-4 border-b">
                 <img 
                   src={product.images[0]} 
                   alt={product.name}
-                  className="w-16 h-20 object-cover flex-shrink-0"
+                  className="w-24 h-32 object-cover"
                 />
                 
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-medium text-gray-900 mb-1">{product.name}</h3>
-                  <p className="text-xs text-gray-500 mb-1">
+                <div className="flex-1">
+                  <h3 className="font-bold text-gray-800 mb-1">{product.name}</h3>
+                  <p className="text-sm text-gray-500 mb-2">
                     Size: {item.size} | Color: {item.color}
                   </p>
-                  <p className="text-sm font-medium text-gray-900">${product.price}</p>
-                </div>
-                
-                <div className="flex flex-col items-end space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <button 
-                      onClick={() => updateCartItem(item.id, Math.max(1, item.quantity - 1))}
-                      className="w-8 h-8 flex items-center justify-center border border-gray-300 text-sm"
-                    >
-                      -
-                    </button>
-                    <span className="w-8 text-center text-sm">{item.quantity}</span>
-                    <button 
-                      onClick={() => updateCartItem(item.id, item.quantity + 1)}
-                      className="w-8 h-8 flex items-center justify-center border border-gray-300 text-sm"
-                    >
-                      +
-                    </button>
+                  
+                  <div className="flex items-center space-x-2 mb-4">
+                    <span className="font-bold">₹{discountPrice}</span>
+                    <span className="text-sm text-gray-400 line-through">₹{product.price}</span>
+                    <span className="text-sm text-orange-600">(20% OFF)</span>
                   </div>
                   
-                  <button 
-                    onClick={() => removeFromCart(item.id)}
-                    className="text-xs text-gray-500 hover:text-red-500"
-                  >
-                    Remove
-                  </button>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <button 
+                        onClick={() => updateCartItem(item.id, Math.max(1, item.quantity - 1))}
+                        className="border border-gray-300 w-8 h-8 flex items-center justify-center text-sm hover:bg-gray-50"
+                      >
+                        -
+                      </button>
+                      <span className="w-8 text-center">{item.quantity}</span>
+                      <button 
+                        onClick={() => updateCartItem(item.id, item.quantity + 1)}
+                        className="border border-gray-300 w-8 h-8 flex items-center justify-center text-sm hover:bg-gray-50"
+                      >
+                        +
+                      </button>
+                    </div>
+                    
+                    <button 
+                      onClick={() => removeFromCart(item.id)}
+                      className="text-sm text-gray-500 hover:text-red-500"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
               </div>
             );
           })}
         </div>
         
-        <div className="border-t pt-4">
-          <div className="flex justify-between items-center text-lg font-medium mb-6">
-            <span>Total: ${calculateTotal()}</span>
-          </div>
-          
-          <button 
-            onClick={() => setShowCheckout(true)}
-            className="w-full bg-black text-white py-3 text-sm font-medium"
-          >
-            CHECKOUT
-          </button>
-        </div>
-
-        {showCheckout && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white max-w-md w-full p-6">
-              <h3 className="text-lg font-medium mb-4">Checkout</h3>
-              <form onSubmit={handleCheckout} className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Full Name"
-                  value={checkoutForm.customer_name}
-                  onChange={(e) => setCheckoutForm({...checkoutForm, customer_name: e.target.value})}
-                  className="w-full border border-gray-300 px-3 py-2 text-sm"
-                  required
-                />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={checkoutForm.customer_email}
-                  onChange={(e) => setCheckoutForm({...checkoutForm, customer_email: e.target.value})}
-                  className="w-full border border-gray-300 px-3 py-2 text-sm"
-                  required
-                />
-                <textarea
-                  placeholder="Shipping Address"
-                  value={checkoutForm.shipping_address}
-                  onChange={(e) => setCheckoutForm({...checkoutForm, shipping_address: e.target.value})}
-                  className="w-full border border-gray-300 px-3 py-2 text-sm h-20"
-                  required
-                />
-                <div className="flex space-x-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowCheckout(false)}
-                    className="flex-1 bg-gray-200 text-gray-700 py-2 text-sm"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 bg-black text-white py-2 text-sm"
-                  >
-                    Place Order
-                  </button>
-                </div>
-              </form>
+        {/* Order Summary */}
+        <div className="lg:col-span-1">
+          <div className="bg-gray-50 p-6 rounded-lg">
+            <h3 className="font-bold text-lg mb-4">Price Details</h3>
+            
+            <div className="space-y-2 mb-4">
+              <div className="flex justify-between">
+                <span>Total MRP</span>
+                <span>₹{calculateOriginalTotal()}</span>
+              </div>
+              <div className="flex justify-between text-green-600">
+                <span>Discount on MRP</span>
+                <span>-₹{(calculateOriginalTotal() - calculateTotal()).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Convenience Fee</span>
+                <span>₹99</span>
+              </div>
+              <hr className="my-4" />
+              <div className="flex justify-between font-bold text-lg">
+                <span>Total Amount</span>
+                <span>₹{(parseFloat(calculateTotal()) + 99).toFixed(2)}</span>
+              </div>
+            </div>
+            
+            <button className="w-full bg-pink-600 text-white py-3 font-bold text-sm hover:bg-pink-700 transition-colors mb-4">
+              PLACE ORDER
+            </button>
+            
+            <div className="text-center">
+              <svg className="w-6 h-6 inline-block mr-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm text-green-600">Safe and Secure Payments</span>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
 };
 
+// Main App Component
 const App = () => {
   const [currentView, setCurrentView] = useState('home');
   const [initialized, setInitialized] = useState(false);
@@ -796,40 +779,25 @@ const App = () => {
 
   const renderContent = () => {
     switch (currentView) {
-      case 'products':
-        return <ProductsSection />;
       case 'cart':
         return <CartPage />;
-      case 'about':
-        return (
-          <div className="px-4 py-16">
-            <div className="max-w-2xl mx-auto">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">About StyleHub</h2>
-              <p className="text-gray-600 leading-relaxed text-sm">
-                StyleHub is your premier destination for high-quality, fashionable clothing. 
-                We curate the finest pieces from around the world to bring you a shopping experience 
-                that's both luxurious and accessible. Our commitment to quality, style, and customer 
-                satisfaction sets us apart in the world of online fashion retail.
-              </p>
-            </div>
-          </div>
-        );
+      case 'men':
+      case 'women':
+      case 'kids':
+      case 'home-living':
+      case 'beauty':
+        return <ProductsSection title={currentView.toUpperCase().replace('-', ' & ')} filter={`${currentView}_wear`} />;
       default:
-        return (
-          <>
-            <Hero />
-            <ProductsSection />
-          </>
-        );
+        return <Homepage />;
     }
   };
 
   if (!initialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
-          <p className="text-sm text-gray-600">Loading StyleHub...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading StyleHub...</p>
         </div>
       </div>
     );
