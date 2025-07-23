@@ -1093,6 +1093,7 @@ const App = () => {
       <div className="min-h-screen bg-white">
         <Header currentView={currentView} setCurrentView={setCurrentView} />
         {renderContent()}
+        <Footer />
       </div>
     </CartProvider>
   );
