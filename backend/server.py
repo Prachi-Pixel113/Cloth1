@@ -669,72 +669,198 @@ async def initialize_sample_data():
     if existing_products:
         return {"message": "Sample data already exists"}
     
+    # Initialize brands first
+    sample_brands = [
+        {
+            "name": "StyleHub Premium",
+            "description": "Premium quality fashion for the modern individual",
+            "logo_url": "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=200&h=200&fit=crop",
+            "brand_story": "Founded with a vision to bring premium quality fashion accessible to everyone, StyleHub Premium has been crafting exceptional clothing since 2020.",
+            "featured": True,
+            "founded_year": 2020,
+            "website_url": "https://stylehub.com",
+            "social_links": {
+                "instagram": "@stylehubpremium",
+                "facebook": "StyleHubPremium",
+                "twitter": "@stylehub"
+            }
+        },
+        {
+            "name": "Urban Essence",
+            "description": "Contemporary streetwear with urban flair",
+            "logo_url": "https://images.unsplash.com/photo-1599503663134-67fb1c65d6c4?w=200&h=200&fit=crop",
+            "brand_story": "Urban Essence captures the spirit of city life through contemporary designs that blend comfort with cutting-edge style.",
+            "featured": True,
+            "founded_year": 2018,
+            "website_url": "https://urbanessence.com",
+            "social_links": {
+                "instagram": "@urbanessence",
+                "facebook": "UrbanEssenceBrand"
+            }
+        },
+        {
+            "name": "Classic Heritage",
+            "description": "Timeless elegance meets modern sophistication",
+            "logo_url": "https://images.unsplash.com/photo-1594736797933-d0c6d8ae2e67?w=200&h=200&fit=crop",
+            "brand_story": "Classic Heritage brings together traditional craftsmanship with contemporary design philosophy for the discerning customer.",
+            "featured": False,
+            "founded_year": 2015,
+            "website_url": "https://classicheritage.com",
+            "social_links": {
+                "instagram": "@classicheritage",
+                "facebook": "ClassicHeritageBrand",
+                "twitter": "@classic_heritage"
+            }
+        },
+        {
+            "name": "SportFlow",
+            "description": "Performance wear for active lifestyles",
+            "logo_url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=200&fit=crop",
+            "brand_story": "SportFlow is dedicated to creating high-performance activewear that empowers athletes and fitness enthusiasts to achieve their best.",
+            "featured": True,
+            "founded_year": 2019,
+            "website_url": "https://sportflow.com",
+            "social_links": {
+                "instagram": "@sportflow",
+                "facebook": "SportFlowOfficial",
+                "twitter": "@sportflow"
+            }
+        }
+    ]
+    
+    brand_objects = []
+    for brand_data in sample_brands:
+        brand_obj = Brand(**brand_data)
+        await db.brands.insert_one(brand_obj.dict())
+        brand_objects.append(brand_obj)
+    
+    # Now create enhanced products with brand associations
     sample_products = [
         {
-            "name": "Classic White Shirt",
-            "description": "Elegant white cotton shirt perfect for formal occasions and office wear",
+            "name": "Classic White Formal Shirt",
+            "description": "Elegant white cotton shirt perfect for formal occasions and office wear. Made with premium cotton blend for comfort and durability.",
             "price": 79.99,
             "category": "formal_wear",
+            "brand_id": brand_objects[0].id,
+            "brand_name": brand_objects[0].name,
             "sizes": ["S", "M", "L", "XL"],
-            "colors": ["White", "Light Blue"],
+            "colors": ["White", "Light Blue", "Cream"],
             "images": ["https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85"],
             "stock_quantity": 50,
-            "featured": True
+            "featured": True,
+            "tags": ["formal", "office", "classic", "cotton"],
+            "materials": ["Cotton", "Polyester"],
+            "care_instructions": "Machine wash cold, iron on medium heat",
+            "average_rating": 4.5,
+            "review_count": 125,
+            "view_count": 1250,
+            "purchase_count": 89,
+            "discount_percentage": 15.0
         },
         {
-            "name": "Elegant Maroon Dress",
-            "description": "Stunning maroon dress perfect for evening events and special occasions",
+            "name": "Elegant Maroon Evening Dress",
+            "description": "Stunning maroon dress perfect for evening events and special occasions. Features sophisticated design with premium fabric.",
             "price": 129.99,
             "category": "womens_dresses",
+            "brand_id": brand_objects[0].id,
+            "brand_name": brand_objects[0].name,
             "sizes": ["XS", "S", "M", "L"],
-            "colors": ["Maroon", "Black", "Navy"],
+            "colors": ["Maroon", "Black", "Navy", "Emerald"],
             "images": ["https://images.unsplash.com/photo-1568252542512-9fe8fe9c87bb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwyfHxmYXNoaW9uJTIwbW9kZWx8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85"],
             "stock_quantity": 30,
-            "featured": True
+            "featured": True,
+            "tags": ["evening", "formal", "elegant", "party"],
+            "materials": ["Polyester", "Silk blend"],
+            "care_instructions": "Dry clean only",
+            "average_rating": 4.7,
+            "review_count": 87,
+            "view_count": 2100,
+            "purchase_count": 156,
+            "discount_percentage": 20.0
         },
         {
-            "name": "Casual Yellow Tracksuit",
-            "description": "Comfortable yellow tracksuit ideal for casual outings and sports activities",
+            "name": "Urban Tracksuit Set",
+            "description": "Comfortable tracksuit ideal for casual outings and sports activities. Modern urban design with premium comfort.",
             "price": 89.99,
             "category": "sportswear",
-            "sizes": ["S", "M", "L", "XL"],
-            "colors": ["Yellow", "Gray", "Black"],
+            "brand_id": brand_objects[3].id,
+            "brand_name": brand_objects[3].name,
+            "sizes": ["S", "M", "L", "XL", "XXL"],
+            "colors": ["Yellow", "Gray", "Black", "Navy"],
             "images": ["https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwzfHxmYXNoaW9uJTIwbW9kZWl8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85"],
             "stock_quantity": 40,
-            "featured": False
+            "featured": False,
+            "tags": ["casual", "sport", "comfort", "urban"],
+            "materials": ["Cotton", "Polyester", "Elastane"],
+            "care_instructions": "Machine wash warm, tumble dry low",
+            "average_rating": 4.2,
+            "review_count": 203,
+            "view_count": 1800,
+            "purchase_count": 267,
+            "discount_percentage": 10.0
         },
         {
             "name": "Designer Denim Jeans",
-            "description": "Premium quality denim jeans with perfect fit and modern styling",
+            "description": "Premium quality denim jeans with perfect fit and modern styling. Crafted with attention to detail.",
             "price": 99.99,
             "category": "mens_pants",
+            "brand_id": brand_objects[1].id,
+            "brand_name": brand_objects[1].name,
             "sizes": ["M", "L", "XL", "XXL"],
-            "colors": ["Blue", "Black", "Gray"],
+            "colors": ["Blue", "Black", "Gray", "Dark Blue"],
             "images": ["https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwyfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85"],
             "stock_quantity": 60,
-            "featured": True
+            "featured": True,
+            "tags": ["denim", "casual", "classic", "everyday"],
+            "materials": ["Denim", "Cotton", "Elastane"],
+            "care_instructions": "Machine wash inside out, hang dry",
+            "average_rating": 4.4,
+            "review_count": 312,
+            "view_count": 3200,
+            "purchase_count": 445,
+            "discount_percentage": 25.0
         },
         {
             "name": "Stylish Summer Top",
-            "description": "Light and breathable summer top perfect for warm weather",
+            "description": "Light and breathable summer top perfect for warm weather. Features modern cut and comfortable fit.",
             "price": 49.99,
             "category": "womens_tops",
+            "brand_id": brand_objects[1].id,
+            "brand_name": brand_objects[1].name,
             "sizes": ["XS", "S", "M", "L"],
-            "colors": ["Pink", "White", "Mint Green"],
+            "colors": ["Pink", "White", "Mint Green", "Coral"],
             "images": ["https://images.unsplash.com/photo-1445205170230-053b83016050?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwzfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85"],
             "stock_quantity": 35,
-            "featured": False
+            "featured": False,
+            "tags": ["summer", "casual", "lightweight", "trendy"],
+            "materials": ["Cotton", "Modal"],
+            "care_instructions": "Machine wash cold, line dry",
+            "average_rating": 4.3,
+            "review_count": 156,
+            "view_count": 2400,
+            "purchase_count": 287,
+            "discount_percentage": 30.0
         },
         {
-            "name": "Professional Blazer",
-            "description": "Sharp and sophisticated blazer for business meetings and formal events",
+            "name": "Professional Business Blazer",
+            "description": "Sharp and sophisticated blazer for business meetings and formal events. Tailored for the modern professional.",
             "price": 159.99,
             "category": "formal_wear",
+            "brand_id": brand_objects[2].id,
+            "brand_name": brand_objects[2].name,
             "sizes": ["S", "M", "L", "XL"],
-            "colors": ["Black", "Navy", "Charcoal"],
+            "colors": ["Black", "Navy", "Charcoal", "Brown"],
             "images": ["https://images.unsplash.com/photo-1562572159-4efc207f5aff?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwbW9kZWx8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85"],
             "stock_quantity": 25,
-            "featured": True
+            "featured": True,
+            "tags": ["business", "formal", "professional", "classic"],
+            "materials": ["Wool", "Polyester", "Viscose"],
+            "care_instructions": "Dry clean recommended",
+            "average_rating": 4.6,
+            "review_count": 98,
+            "view_count": 1900,
+            "purchase_count": 134,
+            "discount_percentage": 18.0
         }
     ]
     
@@ -742,7 +868,31 @@ async def initialize_sample_data():
         product_obj = Product(**product_data)
         await db.products.insert_one(product_obj.dict())
     
-    return {"message": f"Initialized {len(sample_products)} sample products"}
+    # Initialize some sample reviews
+    sample_reviews = [
+        {
+            "product_id": sample_products[0]["name"],  # We'll need to get the actual ID
+            "user_name": "Sarah Johnson",
+            "user_email": "sarah.j@email.com",
+            "rating": 5,
+            "title": "Perfect fit and quality!",
+            "comment": "This shirt exceeded my expectations. The material is high quality and the fit is perfect. Great for office wear.",
+            "verified_purchase": True,
+            "helpful_count": 12
+        },
+        {
+            "product_id": sample_products[1]["name"],
+            "user_name": "Emily Chen", 
+            "user_email": "emily.c@email.com",
+            "rating": 5,
+            "title": "Absolutely stunning dress",
+            "comment": "Wore this to a wedding and received so many compliments. The color is gorgeous and the fit is flattering.",
+            "verified_purchase": True,
+            "helpful_count": 8
+        }
+    ]
+    
+    return {"message": f"Initialized {len(sample_brands)} brands and {len(sample_products)} products"}
 
 # Include the router in the main app
 app.include_router(api_router)
