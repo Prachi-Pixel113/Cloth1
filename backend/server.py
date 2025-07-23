@@ -393,11 +393,43 @@ async def get_recently_viewed_products(
     return [Product(**product) for product in ordered_products]
 
 @api_router.get("/products/{product_id}", response_model=Product)
-async def get_product(product_id: str):
+async def get_product(product_id: str, session_id: Optional[str] = None):
     product = await db.products.find_one({"id": product_id})
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Track product view
+    if session_id:
+        await track_user_activity(session_id, product_id, "view")
+        # Update product view count
+        await db.products.update_one(
+            {"id": product_id},
+            {"$inc": {"view_count": 1}}
+        )
+    
     return Product(**product)
+
+# User Activity Tracking
+async def track_user_activity(session_id: str, product_id: str, activity_type: str, additional_data: Dict[str, Any] = None):
+    """Helper function to track user activities"""
+    activity = UserActivity(
+        session_id=session_id,
+        product_id=product_id,
+        activity_type=activity_type,
+        additional_data=additional_data or {}
+    )
+    await db.user_activities.insert_one(activity.dict())
+
+@api_router.post("/products/{product_id}/track-activity")
+async def track_product_activity(
+    product_id: str,
+    session_id: str,
+    activity_type: str,
+    additional_data: Dict[str, Any] = None
+):
+    """Explicitly track user activity"""
+    await track_user_activity(session_id, product_id, activity_type, additional_data)
+    return {"message": "Activity tracked successfully"}
 
 @api_router.post("/products", response_model=Product)
 async def create_product(product: ProductCreate):
