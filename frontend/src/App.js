@@ -1040,8 +1040,14 @@ const Footer = () => {
             <h3 className="font-bold text-gray-800 mb-4 text-sm uppercase tracking-wide">POPULAR SEARCHES</h3>
             <div className="flex flex-wrap gap-2 text-xs">
               {[
-                'Shirts', 'Dresses', 'Jeans', 'Formal Shirts', 'Kurtas', 'T-Shirts', 
-                'Sarees', 'Ethnic Wear', 'Shoes', 'Handbags', 'Watches', 'Sunglasses'
+                'T-Shirts', 'Kurtas', 'Casual Shirts', 'Formal Shirts', 'Jeans', 'Track Pants',
+                'Sarees', 'Dresses', 'Tops', 'Lehenga Choli', 'Kurtis', 'Ethnic Wear',
+                'Boys Clothing', 'Girls Dresses', 'Kids Footwear', 'Toys',
+                'Bedsheets', 'Curtains', 'Bath Towels', 'Home Décor', 'Kitchen', 'Storage',
+                'Makeup', 'Skincare', 'Hair Care', 'Fragrances', 'Men\'s Grooming', 'Wellness',
+                'Footwear', 'Sneakers', 'Formal Shoes', 'Sandals', 'Heels', 'Flats',
+                'Handbags', 'Backpacks', 'Wallets', 'Belts', 'Watches', 'Sunglasses',
+                'Innerwear', 'Sleepwear', 'Activewear', 'Swimwear', 'Winter Wear', 'Rainwear'
               ].map((item, index) => (
                 <a 
                   key={index}
