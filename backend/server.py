@@ -209,6 +209,7 @@ class OrderCreate(BaseModel):
 async def get_products(
     category: Optional[ClothingCategory] = None,
     featured: Optional[bool] = None,
+    brand_id: Optional[str] = None,
     limit: int = Query(default=20, le=100),
     skip: int = Query(default=0, ge=0)
 ):
@@ -217,9 +218,179 @@ async def get_products(
         filter_dict["category"] = category
     if featured is not None:
         filter_dict["featured"] = featured
+    if brand_id:
+        filter_dict["brand_id"] = brand_id
     
     products = await db.products.find(filter_dict).skip(skip).limit(limit).to_list(limit)
     return [Product(**product) for product in products]
+
+# Enhanced search endpoint
+@api_router.post("/products/search", response_model=List[Product])
+async def search_products(search_query: SearchQuery):
+    filter_dict = {}
+    
+    # Text search
+    if search_query.query:
+        filter_dict["$or"] = [
+            {"name": {"$regex": search_query.query, "$options": "i"}},
+            {"description": {"$regex": search_query.query, "$options": "i"}},
+            {"tags": {"$in": [search_query.query]}},
+            {"brand_name": {"$regex": search_query.query, "$options": "i"}}
+        ]
+    
+    # Category filter
+    if search_query.category:
+        filter_dict["category"] = search_query.category
+    
+    # Brand filter
+    if search_query.brand_id:
+        filter_dict["brand_id"] = search_query.brand_id
+    
+    # Price range
+    if search_query.min_price is not None or search_query.max_price is not None:
+        price_filter = {}
+        if search_query.min_price is not None:
+            price_filter["$gte"] = search_query.min_price
+        if search_query.max_price is not None:
+            price_filter["$lte"] = search_query.max_price
+        filter_dict["price"] = price_filter
+    
+    # Size filter
+    if search_query.sizes:
+        filter_dict["sizes"] = {"$in": search_query.sizes}
+    
+    # Color filter
+    if search_query.colors:
+        filter_dict["colors"] = {"$in": search_query.colors}
+    
+    # Sorting
+    sort_criteria = []
+    if search_query.sort_by == "price_low":
+        sort_criteria.append(("price", 1))
+    elif search_query.sort_by == "price_high":
+        sort_criteria.append(("price", -1))
+    elif search_query.sort_by == "rating":
+        sort_criteria.append(("average_rating", -1))
+    elif search_query.sort_by == "newest":
+        sort_criteria.append(("created_at", -1))
+    elif search_query.sort_by == "popularity":
+        sort_criteria.append(("view_count", -1))
+    else:  # relevance
+        sort_criteria.append(("featured", -1))
+        sort_criteria.append(("average_rating", -1))
+    
+    cursor = db.products.find(filter_dict)
+    for field, direction in sort_criteria:
+        cursor = cursor.sort(field, direction)
+    
+    products = await cursor.skip(search_query.skip).limit(search_query.limit).to_list(search_query.limit)
+    return [Product(**product) for product in products]
+
+@api_router.get("/products/suggestions")
+async def get_search_suggestions(q: str = Query(..., min_length=2)):
+    """Get search suggestions based on partial query"""
+    suggestions = []
+    
+    # Product name suggestions
+    name_regex = {"$regex": f"^{re.escape(q)}", "$options": "i"}
+    products = await db.products.find(
+        {"name": name_regex}, 
+        {"name": 1, "_id": 0}
+    ).limit(5).to_list(5)
+    
+    suggestions.extend([p["name"] for p in products])
+    
+    # Brand name suggestions
+    brands = await db.brands.find(
+        {"name": name_regex}, 
+        {"name": 1, "_id": 0}
+    ).limit(3).to_list(3)
+    
+    suggestions.extend([b["name"] for b in brands])
+    
+    # Remove duplicates and limit
+    unique_suggestions = list(dict.fromkeys(suggestions))[:8]
+    
+    return {"suggestions": unique_suggestions}
+
+@api_router.get("/products/trending", response_model=List[Product])
+async def get_trending_products(
+    period: str = Query(default="weekly", regex="^(daily|weekly|monthly)$"),
+    limit: int = Query(default=10, le=50)
+):
+    """Get trending products based on view count and purchase activity"""
+    # Calculate trending score based on recent activity
+    sort_criteria = [("view_count", -1), ("purchase_count", -1), ("average_rating", -1)]
+    
+    products = await db.products.find({}).sort(sort_criteria).limit(limit).to_list(limit)
+    return [Product(**product) for product in products]
+
+@api_router.get("/products/recommended/{session_id}", response_model=List[Product])
+async def get_recommended_products(
+    session_id: str,
+    limit: int = Query(default=10, le=20)
+):
+    """Get personalized product recommendations based on user activity"""
+    # Get user's recent activity
+    recent_views = await db.user_activities.find({
+        "session_id": session_id,
+        "activity_type": "view"
+    }).sort("timestamp", -1).limit(20).to_list(20)
+    
+    if not recent_views:
+        # If no activity, return featured products
+        products = await db.products.find({"featured": True}).limit(limit).to_list(limit)
+        return [Product(**product) for product in products]
+    
+    # Get categories and brands from recent views
+    viewed_product_ids = [activity["product_id"] for activity in recent_views]
+    viewed_products = await db.products.find({"id": {"$in": viewed_product_ids}}).to_list(20)
+    
+    categories = [p["category"] for p in viewed_products]
+    brand_ids = [p.get("brand_id") for p in viewed_products if p.get("brand_id")]
+    
+    # Find similar products
+    filter_dict = {
+        "id": {"$nin": viewed_product_ids},  # Exclude already viewed
+        "$or": [
+            {"category": {"$in": categories}},
+            {"brand_id": {"$in": brand_ids}} if brand_ids else {}
+        ]
+    }
+    
+    # Remove empty conditions
+    filter_dict["$or"] = [condition for condition in filter_dict["$or"] if condition]
+    
+    recommended_products = await db.products.find(filter_dict).sort([
+        ("average_rating", -1),
+        ("featured", -1),
+        ("view_count", -1)
+    ]).limit(limit).to_list(limit)
+    
+    return [Product(**product) for product in recommended_products]
+
+@api_router.get("/products/recently-viewed/{session_id}", response_model=List[Product])
+async def get_recently_viewed_products(
+    session_id: str,
+    limit: int = Query(default=10, le=20)
+):
+    """Get recently viewed products for a session"""
+    recent_views = await db.user_activities.find({
+        "session_id": session_id,
+        "activity_type": "view"
+    }).sort("timestamp", -1).limit(limit).to_list(limit)
+    
+    if not recent_views:
+        return []
+    
+    product_ids = [activity["product_id"] for activity in recent_views]
+    products = await db.products.find({"id": {"$in": product_ids}}).to_list(limit)
+    
+    # Maintain order from recent views
+    product_dict = {p["id"]: p for p in products}
+    ordered_products = [product_dict[pid] for pid in product_ids if pid in product_dict]
+    
+    return [Product(**product) for product in ordered_products]
 
 @api_router.get("/products/{product_id}", response_model=Product)
 async def get_product(product_id: str):
