@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend API Testing for Ecommerce Clothing Website
-Tests the full ecommerce workflow: initialize data → browse products → add to cart → place order
+Comprehensive Backend API Testing for StyleHub Enhanced E-commerce Application
+Tests both basic ecommerce workflow AND new enhanced features:
+- Enhanced Search API with filters and sorting
+- Search Suggestions and Trending Products
+- Personalized Recommendations and Recently Viewed
+- Product Activity Tracking
+- Brand Management System
+- Review System with ratings
+- Enhanced Product Model with new fields
 """
 
 import requests
