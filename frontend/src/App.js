@@ -380,13 +380,13 @@ const HeroBanners = () => {
   );
 };
 
-// Category Section
+// Category Section with comprehensive categories
 const CategorySection = ({ title, categories }) => {
   return (
     <div className="py-8">
       <div className="max-w-7xl mx-auto px-4">
         <h2 className="text-xl md:text-2xl font-bold text-center mb-6 text-gray-800">{title}</h2>
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+        <div className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-8 gap-4">
           {categories.map((category, index) => (
             <div key={index} className="text-center cursor-pointer group">
               <div className="w-full aspect-square rounded-full overflow-hidden mb-2 group-hover:scale-105 transition-transform">
@@ -405,8 +405,19 @@ const CategorySection = ({ title, categories }) => {
   );
 };
 
-// Deals Section
+// Enhanced Deals Section with more categories
 const DealsSection = () => {
+  const deals = [
+    { discount: "40-70% OFF", category: "Shirts & T-Shirts", subcategory: "Men's Topwear", image: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
+    { discount: "50-80% OFF", category: "Dresses & Kurtas", subcategory: "Women's Wear", image: "https://images.unsplash.com/photo-1568252542512-9fe8fe9c87bb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwyfHxmYXNoaW9uJTIwbW9kZWx8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" },
+    { discount: "30-60% OFF", category: "Track Pants & Joggers", subcategory: "Sportswear", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwzfHxmYXNoaW9uJTIwbW9kZWl8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" },
+    { discount: "25-50% OFF", category: "Jeans & Trousers", subcategory: "Bottomwear", image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwyfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
+    { discount: "35-65% OFF", category: "Ethnic Wear", subcategory: "Festive Collection", image: "https://images.unsplash.com/photo-1562572159-4efc207f5aff?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwbW9kZWx8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" },
+    { discount: "20-40% OFF", category: "Footwear", subcategory: "Shoes & Sandals", image: "https://images.unsplash.com/photo-1445205170230-053b83016050?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwzfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
+    { discount: "15-30% OFF", category: "Accessories", subcategory: "Bags & Watches", image: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
+    { discount: "10-25% OFF", category: "Beauty & Personal Care", subcategory: "Skincare & Makeup", image: "https://images.unsplash.com/photo-1568252542512-9fe8fe9c87bb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwyfHxmYXNoaW9uJTIwbW9kZWx8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" }
+  ];
+
   return (
     <div className="bg-yellow-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
@@ -414,18 +425,14 @@ const DealsSection = () => {
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">DEALS OF THE DAY</h2>
           <p className="text-gray-600">Limited Time Offers</p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { discount: "40-70% OFF", category: "Shirts", image: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
-            { discount: "50-80% OFF", category: "Dresses", image: "https://images.unsplash.com/photo-1568252542512-9fe8fe9c87bb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwyfHxmYXNoaW9uJTIwbW9kZWx8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" },
-            { discount: "30-60% OFF", category: "Sportswear", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwzfHxmYXNoaW9uJTIwbW9kZWl8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" },
-            { discount: "25-50% OFF", category: "Jeans", image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwyfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" }
-          ].map((deal, index) => (
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
+          {deals.slice(0, 8).map((deal, index) => (
             <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow">
               <img src={deal.image} alt={deal.category} className="w-full h-32 md:h-40 object-cover" />
               <div className="p-3 text-center">
                 <p className="font-bold text-pink-600 text-sm md:text-base">{deal.discount}</p>
-                <p className="text-xs md:text-sm text-gray-700">{deal.category}</p>
+                <p className="text-xs md:text-sm text-gray-800 font-medium">{deal.category}</p>
+                <p className="text-xs text-gray-500">{deal.subcategory}</p>
               </div>
             </div>
           ))}
