@@ -377,14 +377,15 @@ class StyleHubEnhancedAPITester:
         
         product_id = self.sample_products[0]['id']
         
-        activity_data = {
+        # Use query parameters instead of JSON body
+        params = {
             "session_id": SESSION_ID,
             "activity_type": "view",
             "additional_data": {"source": "search"}
         }
         
         try:
-            response = self.session.post(f"{API_BASE}/products/{product_id}/track-activity", json=activity_data)
+            response = self.session.post(f"{API_BASE}/products/{product_id}/track-activity", params=params)
             
             if response.status_code == 200:
                 result = response.json()
