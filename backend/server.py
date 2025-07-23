@@ -45,6 +45,60 @@ class Size(str, Enum):
     XL = "XL"
     XXL = "XXL"
 
+class ReviewRating(int, Enum):
+    ONE = 1
+    TWO = 2
+    THREE = 3
+    FOUR = 4
+    FIVE = 5
+
+# Enhanced Models
+class Brand(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    description: str
+    logo_url: str
+    brand_story: str
+    featured: bool = False
+    founded_year: Optional[int] = None
+    website_url: Optional[str] = None
+    social_links: Dict[str, str] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class Review(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    product_id: str
+    user_name: str
+    user_email: str
+    rating: ReviewRating
+    title: str
+    comment: str
+    verified_purchase: bool = False
+    helpful_count: int = 0
+    images: List[str] = Field(default_factory=list)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class UserActivity(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    session_id: str
+    product_id: str
+    activity_type: str  # "view", "wishlist", "cart_add", "purchase"
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    additional_data: Dict[str, Any] = Field(default_factory=dict)
+
+class SearchSuggestion(BaseModel):
+    query: str
+    count: int
+    category: Optional[str] = None
+
+class TrendingProduct(BaseModel):
+    product_id: str
+    view_count: int
+    purchase_count: int
+    wishlist_count: int
+    trend_score: float
+    period: str  # "daily", "weekly", "monthly"
+
 # Models
 class Product(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
