@@ -965,10 +965,24 @@ const Footer = () => {
             <h3 className="font-bold text-gray-800 mb-4 text-sm uppercase tracking-wide">ONLINE SHOPPING</h3>
             <ul className="space-y-2 text-sm text-gray-600">
               <li><a href="#" className="hover:text-pink-600 transition-colors">Men</a></li>
+              <li className="ml-2 space-y-1">
+                <div><a href="#" className="hover:text-pink-600 transition-colors text-xs">T-Shirts & Polos</a></div>
+                <div><a href="#" className="hover:text-pink-600 transition-colors text-xs">Shirts</a></div>
+                <div><a href="#" className="hover:text-pink-600 transition-colors text-xs">Jeans</a></div>
+                <div><a href="#" className="hover:text-pink-600 transition-colors text-xs">Kurtas</a></div>
+              </li>
               <li><a href="#" className="hover:text-pink-600 transition-colors">Women</a></li>
+              <li className="ml-2 space-y-1">
+                <div><a href="#" className="hover:text-pink-600 transition-colors text-xs">Sarees</a></div>
+                <div><a href="#" className="hover:text-pink-600 transition-colors text-xs">Kurtas & Suits</a></div>
+                <div><a href="#" className="hover:text-pink-600 transition-colors text-xs">Dresses</a></div>
+                <div><a href="#" className="hover:text-pink-600 transition-colors text-xs">Tops</a></div>
+              </li>
               <li><a href="#" className="hover:text-pink-600 transition-colors">Kids</a></li>
               <li><a href="#" className="hover:text-pink-600 transition-colors">Home & Living</a></li>
               <li><a href="#" className="hover:text-pink-600 transition-colors">Beauty</a></li>
+              <li><a href="#" className="hover:text-pink-600 transition-colors">Footwear</a></li>
+              <li><a href="#" className="hover:text-pink-600 transition-colors">Accessories</a></li>
               <li><a href="#" className="hover:text-pink-600 transition-colors">Gift Cards</a></li>
               <li><a href="#" className="hover:text-pink-600 transition-colors">StyleHub Insider</a></li>
             </ul>
