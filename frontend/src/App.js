@@ -2160,160 +2160,300 @@ const CartPage = () => {
   );
 };
 
-// Footer Component
+// Enhanced Responsive Footer Component
 const Footer = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState({
+    shopping: false,
+    policies: false,
+    app: false,
+    searches: false
+  });
+
+  const toggleMenu = (section) => {
+    setIsMenuOpen(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
   return (
     <footer className="bg-gray-50 border-t">
       {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Online Shopping */}
-          <div>
-            <h3 className="font-bold text-gray-800 mb-4 text-sm uppercase tracking-wide">ONLINE SHOPPING</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li><a href="#" className="hover:text-pink-600 transition-colors">Men</a></li>
-              <li className="ml-2 space-y-1">
-                <div><a href="#" className="hover:text-pink-600 transition-colors text-xs">T-Shirts & Polos</a></div>
-                <div><a href="#" className="hover:text-pink-600 transition-colors text-xs">Shirts</a></div>
-                <div><a href="#" className="hover:text-pink-600 transition-colors text-xs">Jeans</a></div>
-                <div><a href="#" className="hover:text-pink-600 transition-colors text-xs">Kurtas</a></div>
-              </li>
-              <li><a href="#" className="hover:text-pink-600 transition-colors">Women</a></li>
-              <li className="ml-2 space-y-1">
-                <div><a href="#" className="hover:text-pink-600 transition-colors text-xs">Sarees</a></div>
-                <div><a href="#" className="hover:text-pink-600 transition-colors text-xs">Kurtas & Suits</a></div>
-                <div><a href="#" className="hover:text-pink-600 transition-colors text-xs">Dresses</a></div>
-                <div><a href="#" className="hover:text-pink-600 transition-colors text-xs">Tops</a></div>
-              </li>
-              <li><a href="#" className="hover:text-pink-600 transition-colors">Kids</a></li>
-              <li><a href="#" className="hover:text-pink-600 transition-colors">Home & Living</a></li>
-              <li><a href="#" className="hover:text-pink-600 transition-colors">Beauty</a></li>
-              <li><a href="#" className="hover:text-pink-600 transition-colors">Footwear</a></li>
-              <li><a href="#" className="hover:text-pink-600 transition-colors">Accessories</a></li>
-              <li><a href="#" className="hover:text-pink-600 transition-colors">Gift Cards</a></li>
-              <li><a href="#" className="hover:text-pink-600 transition-colors">StyleHub Insider</a></li>
-            </ul>
-          </div>
-
-          {/* Customer Policies */}
-          <div>
-            <h3 className="font-bold text-gray-800 mb-4 text-sm uppercase tracking-wide">CUSTOMER POLICIES</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li><a href="#" className="hover:text-pink-600 transition-colors">Contact Us</a></li>
-              <li><a href="#" className="hover:text-pink-600 transition-colors">FAQ</a></li>
-              <li><a href="#" className="hover:text-pink-600 transition-colors">T&C</a></li>
-              <li><a href="#" className="hover:text-pink-600 transition-colors">Terms Of Use</a></li>
-              <li><a href="#" className="hover:text-pink-600 transition-colors">Track Orders</a></li>
-              <li><a href="#" className="hover:text-pink-600 transition-colors">Shipping</a></li>
-              <li><a href="#" className="hover:text-pink-600 transition-colors">Cancellation</a></li>
-              <li><a href="#" className="hover:text-pink-600 transition-colors">Returns</a></li>
-              <li><a href="#" className="hover:text-pink-600 transition-colors">Privacy Policy</a></li>
-            </ul>
-          </div>
-
-          {/* Experience StyleHub App */}
-          <div>
-            <h3 className="font-bold text-gray-800 mb-4 text-sm uppercase tracking-wide">EXPERIENCE STYLEHUB APP</h3>
-            <div className="space-y-3 mb-6">
-              <a href="#" className="block">
-                <img 
-                  src="https://constant.myntassets.com/web/assets/img/80cc455a-92d2-4b5c-a038-7da0d92af33f1539674178924-google_play.png" 
-                  alt="Get it on Google Play" 
-                  className="h-10"
-                />
-              </a>
-              <a href="#" className="block">
-                <img 
-                  src="https://constant.myntassets.com/web/assets/img/bc5e11ad-0250-420a-ac71-115a57ca35d51539674178941-apple_store.png" 
-                  alt="Download on App Store" 
-                  className="h-10"
-                />
-              </a>
-            </div>
+      <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+          
+          {/* Online Shopping Section */}
+          <div className="border-b md:border-b-0 pb-4 md:pb-0">
+            <button 
+              onClick={() => toggleMenu('shopping')}
+              className="flex justify-between items-center w-full md:cursor-default"
+            >
+              <h3 className="font-bold text-gray-800 mb-2 md:mb-4 text-sm uppercase tracking-wide">
+                ONLINE SHOPPING
+              </h3>
+              <svg 
+                className={`w-4 h-4 md:hidden transition-transform ${isMenuOpen.shopping ? 'rotate-180' : ''}`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
             
-            <h4 className="font-bold text-gray-800 mb-3 text-sm">KEEP IN TOUCH</h4>
-            <div className="flex space-x-3">
-              <a href="#" className="bg-gray-200 hover:bg-pink-100 p-2 rounded transition-colors">
-                <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
-                </svg>
-              </a>
-              <a href="#" className="bg-gray-200 hover:bg-pink-100 p-2 rounded transition-colors">
-                <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/>
-                </svg>
-              </a>
-              <a href="#" className="bg-gray-200 hover:bg-pink-100 p-2 rounded transition-colors">
-                <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.748-1.378 0 0-.608 2.319-.757 2.877-.274 1.074-1.009 2.424-1.503 3.247C9.013 23.709 10.473 24.001 12.017 24.001c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001 12.017.001z"/>
-                </svg>
-              </a>
-              <a href="#" className="bg-gray-200 hover:bg-pink-100 p-2 rounded transition-colors">
-                <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                </svg>
-              </a>
+            <div className={`${isMenuOpen.shopping ? 'block' : 'hidden'} md:block space-y-3`}>
+              <div>
+                <h4 className="font-semibold text-gray-700 mb-2">Men</h4>
+                <ul className="ml-2 space-y-1 text-sm text-gray-600">
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">T-Shirts & Polos</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Shirts</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Jeans & Pants</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Ethnic Wear</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Blazers & Suits</a></li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold text-gray-700 mb-2">Women</h4>
+                <ul className="ml-2 space-y-1 text-sm text-gray-600">
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Dresses</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Kurtas & Suits</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Sarees</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Tops & Blouses</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Jeans & Skirts</a></li>
+                </ul>
+              </div>
+              
+              <div className="pt-2">
+                <ul className="space-y-1 text-sm text-gray-600">
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Kids</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Home & Living</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Beauty</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Footwear</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Accessories</a></li>
+                </ul>
+              </div>
             </div>
           </div>
 
-          {/* Popular Searches */}
-          <div>
-            <h3 className="font-bold text-gray-800 mb-4 text-sm uppercase tracking-wide">POPULAR SEARCHES</h3>
-            <div className="flex flex-wrap gap-2 text-xs">
-              {[
-                'T-Shirts', 'Kurtas', 'Casual Shirts', 'Formal Shirts', 'Jeans', 'Track Pants',
-                'Sarees', 'Dresses', 'Tops', 'Lehenga Choli', 'Kurtis', 'Ethnic Wear',
-                'Boys Clothing', 'Girls Dresses', 'Kids Footwear', 'Toys',
-                'Bedsheets', 'Curtains', 'Bath Towels', 'Home Décor', 'Kitchen', 'Storage',
-                'Makeup', 'Skincare', 'Hair Care', 'Fragrances', 'Men\'s Grooming', 'Wellness',
-                'Footwear', 'Sneakers', 'Formal Shoes', 'Sandals', 'Heels', 'Flats',
-                'Handbags', 'Backpacks', 'Wallets', 'Belts', 'Watches', 'Sunglasses',
-                'Innerwear', 'Sleepwear', 'Activewear', 'Swimwear', 'Winter Wear', 'Rainwear'
-              ].map((item, index) => (
-                <a 
-                  key={index}
-                  href="#" 
-                  className="bg-gray-100 hover:bg-pink-100 text-gray-600 hover:text-pink-600 px-2 py-1 rounded transition-colors"
-                >
-                  {item}
+          {/* Customer Policies Section */}
+          <div className="border-b md:border-b-0 pb-4 md:pb-0">
+            <button 
+              onClick={() => toggleMenu('policies')}
+              className="flex justify-between items-center w-full md:cursor-default"
+            >
+              <h3 className="font-bold text-gray-800 mb-2 md:mb-4 text-sm uppercase tracking-wide">
+                CUSTOMER POLICIES
+              </h3>
+              <svg 
+                className={`w-4 h-4 md:hidden transition-transform ${isMenuOpen.policies ? 'rotate-180' : ''}`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            <ul className={`${isMenuOpen.policies ? 'block' : 'hidden'} md:block space-y-2 text-sm text-gray-600`}>
+              <li><a href="#" className="hover:text-purple-600 transition-colors flex items-center">
+                <svg className="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                Contact Us
+              </a></li>
+              <li><a href="#" className="hover:text-purple-600 transition-colors flex items-center">
+                <svg className="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                FAQ
+              </a></li>
+              <li><a href="#" className="hover:text-purple-600 transition-colors">Terms & Conditions</a></li>
+              <li><a href="#" className="hover:text-purple-600 transition-colors">Privacy Policy</a></li>
+              <li><a href="#" className="hover:text-purple-600 transition-colors flex items-center">
+                <svg className="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5V3a2 2 0 012-2h2a2 2 0 012 2v2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+                Track Orders
+              </a></li>
+              <li><a href="#" className="hover:text-purple-600 transition-colors">Shipping Info</a></li>
+              <li><a href="#" className="hover:text-purple-600 transition-colors">Returns & Refunds</a></li>
+              <li><a href="#" className="hover:text-purple-600 transition-colors">Size Guide</a></li>
+            </ul>
+          </div>
+
+          {/* Experience StyleHub App Section */}
+          <div className="border-b md:border-b-0 pb-4 md:pb-0">
+            <button 
+              onClick={() => toggleMenu('app')}
+              className="flex justify-between items-center w-full md:cursor-default"
+            >
+              <h3 className="font-bold text-gray-800 mb-2 md:mb-4 text-sm uppercase tracking-wide">
+                STYLEHUB APP
+              </h3>
+              <svg 
+                className={`w-4 h-4 md:hidden transition-transform ${isMenuOpen.app ? 'rotate-180' : ''}`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            <div className={`${isMenuOpen.app ? 'block' : 'hidden'} md:block`}>
+              <div className="flex flex-col sm:flex-row md:flex-col space-y-3 sm:space-y-0 sm:space-x-3 md:space-x-0 md:space-y-3 mb-6">
+                <a href="#" className="block transition-transform hover:scale-105">
+                  <div className="bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993.0001.5511-.4482.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4653-6.02h1.22c1.6337 0 2.9511-1.3174 2.9511-2.9511 0-.8636-.3887-1.6353-.9993-2.1593-.1667-.1434-.3757-.2328-.6018-.2328-.0386 0-.0753.0094-.1139.0123-.3533-.6687-.9993-1.1218-1.7536-1.1218-.2261 0-.4351.0894-.6018.2328-.3045.2615-.4913.6475-.4913 1.0731v1.1656h-2.9511c-.5511 0-.9993.4486-.9993.9997s.4482.9993.9993.9993h2.9511v1.1656c0 .4256.1868.8116.4913 1.0731.1667.1434.3757.2328.6018.2328.7543 0 1.4003-.4531 1.7536-1.1218.0386.0029.0753.0123.1139.0123.2261 0 .4351-.0894.6018-.2328.6106-.524.9993-1.2957.9993-2.1593-.0001-1.6337-1.3174-2.9511-2.9511-2.9511h-1.22m-1.6664 3.2508h-1.1656v-2.9511c0-.5511-.4486-.9993-.9997-.9993s-.9993.4482-.9993.9993v2.9511h-1.1656c-.4256 0-.8116.1868-1.0731.4913-.1434.1667-.2328.3757-.2328.6018 0 .7543.4531 1.4003 1.1218 1.7536-.0029.0386-.0123.0753-.0123.1139 0 .2261.0894.4351.2328.6018.2615.3045.6475.4913 1.0731.4913h1.1656v2.9511c0 .5511.4482.9993.9993.9993s.9997-.4482.9997-.9993v-2.9511h1.1656c.4256 0 .8116-.1868 1.0731-.4913.1434-.1667.2328-.3757.2328-.6018 0-.0386-.0094-.0753-.0123-.1139.6687-.3533 1.1218-.9993 1.1218-1.7536 0-.2261-.0894-.4351-.2328-.6018-.2615-.3045-.6475-.4913-1.0731-.4913"/>
+                    </svg>
+                    <div className="text-left">
+                      <div className="text-xs">Get it on</div>
+                      <div className="text-sm font-bold">Google Play</div>
+                    </div>
+                  </div>
                 </a>
-              ))}
+                
+                <a href="#" className="block transition-transform hover:scale-105">
+                  <div className="bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                    </svg>
+                    <div className="text-left">
+                      <div className="text-xs">Download on the</div>
+                      <div className="text-sm font-bold">App Store</div>
+                    </div>
+                  </div>
+                </a>
+              </div>
+              
+              <div className="mb-4">
+                <h4 className="font-bold text-gray-800 mb-3 text-sm">FOLLOW US</h4>
+                <div className="flex flex-wrap gap-3">
+                  <a href="#" className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-3 rounded-full transition-all transform hover:scale-110 shadow-md">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                    </svg>
+                  </a>
+                  
+                  <a href="#" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white p-3 rounded-full transition-all transform hover:scale-110 shadow-md">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/>
+                    </svg>
+                  </a>
+                  
+                  <a href="#" className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white p-3 rounded-full transition-all transform hover:scale-110 shadow-md">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                  </a>
+                  
+                  <a href="#" className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white p-3 rounded-full transition-all transform hover:scale-110 shadow-md">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Popular Searches Section */}
+          <div>
+            <button 
+              onClick={() => toggleMenu('searches')}
+              className="flex justify-between items-center w-full md:cursor-default"
+            >
+              <h3 className="font-bold text-gray-800 mb-2 md:mb-4 text-sm uppercase tracking-wide">
+                POPULAR SEARCHES
+              </h3>
+              <svg 
+                className={`w-4 h-4 md:hidden transition-transform ${isMenuOpen.searches ? 'rotate-180' : ''}`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            <div className={`${isMenuOpen.searches ? 'block' : 'hidden'} md:block`}>
+              <div className="flex flex-wrap gap-2 text-xs">
+                {[
+                  'T-Shirts', 'Kurtas', 'Casual Shirts', 'Formal Shirts', 'Jeans', 'Chinos',
+                  'Dresses', 'Tops', 'Sarees', 'Blouses', 'Skirts', 'Ethnic Wear',
+                  'Sneakers', 'Formal Shoes', 'Sandals', 'Heels', 'Flats', 'Boots',
+                  'Handbags', 'Backpacks', 'Wallets', 'Belts', 'Watches', 'Sunglasses',
+                  'Activewear', 'Swimwear', 'Winter Wear', 'Rainwear', 'Innerwear', 'Sleepwear'
+                ].map((item, index) => (
+                  <a 
+                    key={index}
+                    href="#" 
+                    className="bg-gray-100 hover:bg-purple-100 text-gray-600 hover:text-purple-600 px-3 py-2 rounded-full transition-all transform hover:scale-105 shadow-sm"
+                  >
+                    {item}
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Payment & Security Section */}
+      {/* Trust Badges & Security Section */}
       <div className="border-t bg-white">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Payment Partners */}
-            <div>
-              <h3 className="font-bold text-gray-800 mb-4 text-sm">100% ORIGINAL</h3>
-              <div className="flex items-center space-x-4 mb-6">
-                <div className="bg-gray-100 p-3 rounded">
-                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="font-medium text-gray-800">guarantee for all products at StyleHub.com</p>
-                </div>
+        <div className="max-w-7xl mx-auto px-4 py-6 md:py-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* 100% Original */}
+            <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
+              <div className="bg-green-100 p-3 rounded-full">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-bold text-sm text-gray-800">100% ORIGINAL</p>
+                <p className="text-xs text-gray-600">Guarantee for all products</p>
               </div>
             </div>
 
-            {/* Return Policy */}
-            <div>
-              <h3 className="font-bold text-gray-800 mb-4 text-sm">RETURN WITHIN 30 DAYS</h3>
-              <div className="flex items-center space-x-4">
-                <div className="bg-gray-100 p-3 rounded">
-                  <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="font-medium text-gray-800">of receiving your order</p>
-                </div>
+            {/* Easy Returns */}
+            <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
+              <div className="bg-blue-100 p-3 rounded-full">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-bold text-sm text-gray-800">EASY RETURNS</p>
+                <p className="text-xs text-gray-600">30-day return policy</p>
+              </div>
+            </div>
+
+            {/* Free Shipping */}
+            <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
+              <div className="bg-purple-100 p-3 rounded-full">
+                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-bold text-sm text-gray-800">FREE SHIPPING</p>
+                <p className="text-xs text-gray-600">On orders above ₹999</p>
+              </div>
+            </div>
+
+            {/* 24/7 Support */}
+            <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
+              <div className="bg-orange-100 p-3 rounded-full">
+                <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-bold text-sm text-gray-800">24/7 SUPPORT</p>
+                <p className="text-xs text-gray-600">Customer care available</p>
               </div>
             </div>
           </div>
@@ -2323,22 +2463,40 @@ const Footer = () => {
       {/* Bottom Footer */}
       <div className="border-t bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="text-sm text-gray-600">
-              © 2024 StyleHub. All rights reserved.
+          <div className="flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0">
+            {/* Copyright */}
+            <div className="text-center lg:text-left">
+              <div className="text-sm text-gray-600 mb-2">
+                © 2024 StyleHub. All rights reserved.
+              </div>
+              <div className="text-xs text-gray-500">
+                Made with ❤️ for fashion lovers
+              </div>
             </div>
             
-            <div className="flex items-center space-x-6 text-sm text-gray-600">
-              <a href="#" className="hover:text-pink-600 transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-pink-600 transition-colors">Terms & Conditions</a>
-              <a href="#" className="hover:text-pink-600 transition-colors">Sitemap</a>
+            {/* Legal Links */}
+            <div className="flex flex-wrap justify-center items-center gap-4 text-sm text-gray-600">
+              <a href="#" className="hover:text-purple-600 transition-colors">Privacy Policy</a>
+              <span className="text-gray-300">|</span>
+              <a href="#" className="hover:text-purple-600 transition-colors">Terms & Conditions</a>
+              <span className="text-gray-300">|</span>
+              <a href="#" className="hover:text-purple-600 transition-colors">Sitemap</a>
             </div>
 
+            {/* Security Badges */}
             <div className="flex items-center space-x-4">
-              <span className="text-xs text-gray-500">Secured by</span>
               <div className="flex items-center space-x-2">
-                <div className="bg-green-600 text-white px-2 py-1 text-xs font-bold rounded">SSL</div>
-                <div className="bg-blue-600 text-white px-2 py-1 text-xs font-bold rounded">256</div>
+                <span className="text-xs text-gray-500">Secured by</span>
+                <div className="flex items-center space-x-1">
+                  <div className="bg-green-600 text-white px-2 py-1 text-xs font-bold rounded">SSL</div>
+                  <div className="bg-blue-600 text-white px-2 py-1 text-xs font-bold rounded">256</div>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span className="text-xs text-gray-500">Secure</span>
               </div>
             </div>
           </div>
