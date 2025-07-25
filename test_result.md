@@ -191,15 +191,18 @@ backend:
 
   - task: "Sales Section API Endpoint"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Created dedicated /api/products/sale endpoint with comprehensive filtering options including category, brand, price range, minimum discount, and sorting by discount percentage. Endpoint returns only products with discount_percentage > 0 from both men's and women's categories."
+        - working: true
+          agent: "testing"
+          comment: "✅ COMPREHENSIVE TESTING COMPLETED: Sales Section API endpoint is fully functional. All 8 core tests passed: (1) Basic functionality returns only products with discount_percentage > 0 ✓, (2) Category filtering works for both men's and women's categories ✓, (3) Brand filtering works correctly ✓, (4) Price range filtering (min_price, max_price) works ✓, (5) Minimum discount filtering (min_discount parameter) works ✓, (6) All 7 sorting options work (discount_high, discount_low, price_low, price_high, rating, newest, popularity) ✓, (7) Pagination (limit and skip parameters) works ✓, (8) Response format matches Product model with all required fields ✓. Found 20 sale products with discounts ranging from 10% to 30%. All existing API endpoints remain fully compatible."
 
   - task: "Sales Section Hero Banner"
     implemented: true
