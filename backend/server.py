@@ -218,6 +218,63 @@ class OrderCreate(BaseModel):
     shipping_address: str
 
 # Product routes
+@api_router.get("/products/women", response_model=List[Product])
+async def get_womens_products(
+    category: Optional[str] = None,
+    brand_id: Optional[str] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+    sort_by: Optional[str] = "featured",
+    limit: int = Query(default=20, le=100),
+    skip: int = Query(default=0, ge=0)
+):
+    """Get women's products with filtering options"""
+    filter_dict = {}
+    
+    # Filter by women's categories
+    womens_categories = ["womens_dresses", "womens_tops", "womens_blouses", "womens_skirts", 
+                        "womens_jeans", "womens_ethnic", "womens_formal", "womens_casual", "womens_sportswear"]
+    
+    if category and category in womens_categories:
+        filter_dict["category"] = category
+    else:
+        filter_dict["category"] = {"$in": womens_categories}
+    
+    # Additional filters
+    if brand_id:
+        filter_dict["brand_id"] = brand_id
+    
+    if min_price is not None or max_price is not None:
+        price_filter = {}
+        if min_price is not None:
+            price_filter["$gte"] = min_price
+        if max_price is not None:
+            price_filter["$lte"] = max_price
+        filter_dict["price"] = price_filter
+    
+    # Sorting
+    sort_criteria = []
+    if sort_by == "price_low":
+        sort_criteria.append(("price", 1))
+    elif sort_by == "price_high":
+        sort_criteria.append(("price", -1))
+    elif sort_by == "rating":
+        sort_criteria.append(("average_rating", -1))
+    elif sort_by == "newest":
+        sort_criteria.append(("created_at", -1))
+    elif sort_by == "popularity":
+        sort_criteria.append(("view_count", -1))
+    else:  # featured
+        sort_criteria.append(("featured", -1))
+        sort_criteria.append(("average_rating", -1))
+    
+    cursor = db.products.find(filter_dict)
+    for field, direction in sort_criteria:
+        cursor = cursor.sort(field, direction)
+    
+    products = await cursor.skip(skip).limit(limit).to_list(limit)
+    return [Product(**product) for product in products]
+
 @api_router.get("/products/men", response_model=List[Product])
 async def get_mens_products(
     category: Optional[str] = None,
