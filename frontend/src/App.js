@@ -3796,11 +3796,13 @@ const App = () => {
 
   return (
     <CartProvider>
-      <div className="min-h-screen bg-white">
-        <Header currentView={currentView} setCurrentView={setCurrentView} />
-        {renderContent()}
-        <Footer />
-      </div>
+      <WishlistProvider>
+        <div className="min-h-screen bg-white">
+          <Header currentView={currentView} setCurrentView={setCurrentView} />
+          {renderContent()}
+          <Footer />
+        </div>
+      </WishlistProvider>
     </CartProvider>
   );
 };
