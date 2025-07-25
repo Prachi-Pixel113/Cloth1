@@ -1545,6 +1545,20 @@ class StyleHubEnhancedAPITester:
             ("Individual Brand Retrieval", self.test_get_individual_brand),
             ("Brand Products", self.test_get_brand_products),
             
+            # Sales Section Tests (NEW - HIGH PRIORITY)
+            ("Sales Products (Basic)", self.test_sales_products_endpoint_basic),
+            ("Sales Category Filtering", self.test_sales_products_category_filter),
+            ("Sales Brand Filtering", self.test_sales_products_brand_filter),
+            ("Sales Price Filtering", self.test_sales_products_price_filter),
+            ("Sales Min Discount Filtering", self.test_sales_products_min_discount_filter),
+            ("Sales Sorting Options", self.test_sales_products_sorting),
+            ("Sales Pagination", self.test_sales_products_pagination),
+            ("Sales Response Format", self.test_sales_products_response_format),
+            
+            # Existing API Compatibility Tests
+            ("Existing Products Endpoint", self.test_existing_products_endpoint),
+            ("Existing Women's Products Endpoint", self.test_existing_womens_products_endpoint),
+            
             # Men's Section Tests
             ("Men's Products Endpoint", self.test_mens_products_endpoint),
             ("Men's Category Filtering", self.test_mens_products_category_filter),
