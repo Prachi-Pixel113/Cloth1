@@ -2259,6 +2259,9 @@ const SalesSection = () => {
         </div>
       )}
     </div>
+  );
+};
+
 const DealsSection = () => {
   const deals = [
     { discount: "40-70% OFF", category: "Men's Formal Shirts", subcategory: "Office & Business Wear", image: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
