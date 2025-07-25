@@ -332,6 +332,69 @@ async def get_mens_products(
     products = await cursor.skip(skip).limit(limit).to_list(limit)
     return [Product(**product) for product in products]
 
+@api_router.get("/products/sale", response_model=List[Product])
+async def get_sale_products(
+    category: Optional[str] = None,
+    brand_id: Optional[str] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+    min_discount: Optional[float] = None,
+    sort_by: Optional[str] = "discount_high",
+    limit: int = Query(default=20, le=100),
+    skip: int = Query(default=0, ge=0)
+):
+    """Get sale products (with discounts) with filtering options"""
+    filter_dict = {}
+    
+    # Only products with discounts
+    if min_discount is not None:
+        filter_dict["discount_percentage"] = {"$gte": min_discount}
+    else:
+        filter_dict["discount_percentage"] = {"$gt": 0}
+    
+    # Category filter (both men's and women's)
+    if category:
+        filter_dict["category"] = category
+    
+    # Additional filters
+    if brand_id:
+        filter_dict["brand_id"] = brand_id
+    
+    if min_price is not None or max_price is not None:
+        price_filter = {}
+        if min_price is not None:
+            price_filter["$gte"] = min_price
+        if max_price is not None:
+            price_filter["$lte"] = max_price
+        filter_dict["price"] = price_filter
+    
+    # Sorting
+    sort_criteria = []
+    if sort_by == "price_low":
+        sort_criteria.append(("price", 1))
+    elif sort_by == "price_high":
+        sort_criteria.append(("price", -1))
+    elif sort_by == "rating":
+        sort_criteria.append(("average_rating", -1))
+    elif sort_by == "newest":
+        sort_criteria.append(("created_at", -1))
+    elif sort_by == "popularity":
+        sort_criteria.append(("view_count", -1))
+    elif sort_by == "discount_high":
+        sort_criteria.append(("discount_percentage", -1))
+    elif sort_by == "discount_low":
+        sort_criteria.append(("discount_percentage", 1))
+    else:  # featured
+        sort_criteria.append(("featured", -1))
+        sort_criteria.append(("discount_percentage", -1))
+    
+    cursor = db.products.find(filter_dict)
+    for field, direction in sort_criteria:
+        cursor = cursor.sort(field, direction)
+    
+    products = await cursor.skip(skip).limit(limit).to_list(limit)
+    return [Product(**product) for product in products]
+
 @api_router.get("/products", response_model=List[Product])
 async def get_products(
     category: Optional[ClothingCategory] = None,
