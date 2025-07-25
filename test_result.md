@@ -360,6 +360,13 @@ test_plan:
     - "Sort Dropdown with Multiple Options"
     - "Mobile Responsive Design"
     - "Clean Grid Layout and Modern Styling"
+    - "Sales Section API Endpoint"
+    - "Sales Section Hero Banner"
+    - "Sales Section Product Filters"
+    - "Sales Section Product Cards with Enhanced Sale Badges"
+    - "Sales Section Sort Options"
+    - "Sales Section Mobile Responsive Design"
+    - "Sales Section Red Theme and Sale Styling"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
