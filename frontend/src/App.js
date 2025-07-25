@@ -531,7 +531,132 @@ const CategorySection = ({ title, categories }) => {
   );
 };
 
-// Enhanced Deals Section focused on Men's and Women's fashion
+// Enhanced Search Results Component
+const SearchResults = ({ searchQuery }) => {
+  const [searchResults, setSearchResults] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({
+    category: '',
+    min_price: '',
+    max_price: '',
+    sort_by: 'relevance'
+  });
+
+  useEffect(() => {
+    if (searchQuery) {
+      performSearch();
+    }
+  }, [searchQuery, filters]);
+
+  const performSearch = async () => {
+    try {
+      setLoading(true);
+      const searchData = {
+        query: searchQuery,
+        ...filters,
+        limit: 20
+      };
+      
+      // Remove empty values
+      Object.keys(searchData).forEach(key => {
+        if (searchData[key] === '') {
+          delete searchData[key];
+        }
+      });
+
+      const response = await axios.post(`${API}/products/search`, searchData);
+      setSearchResults(response.data);
+    } catch (error) {
+      console.error('Error performing search:', error);
+      setSearchResults([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFilterChange = (filterType, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Searching for "{searchQuery}"...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">
+          Search Results for "{searchQuery}"
+        </h1>
+        <p className="text-gray-600">{searchResults.length} products found</p>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-gray-50 p-4 rounded-lg mb-6">
+        <div className="flex flex-wrap gap-4 items-center">
+          <select
+            value={filters.sort_by}
+            onChange={(e) => handleFilterChange('sort_by', e.target.value)}
+            className="border border-gray-300 rounded px-3 py-2 text-sm"
+          >
+            <option value="relevance">Relevance</option>
+            <option value="price_low">Price: Low to High</option>
+            <option value="price_high">Price: High to Low</option>
+            <option value="rating">Customer Rating</option>
+            <option value="newest">Newest First</option>
+          </select>
+          
+          <input
+            type="number"
+            placeholder="Min Price"
+            value={filters.min_price}
+            onChange={(e) => handleFilterChange('min_price', e.target.value)}
+            className="border border-gray-300 rounded px-3 py-2 text-sm w-24"
+          />
+          
+          <input
+            type="number"
+            placeholder="Max Price"
+            value={filters.max_price}
+            onChange={(e) => handleFilterChange('max_price', e.target.value)}
+            className="border border-gray-300 rounded px-3 py-2 text-sm w-24"
+          />
+        </div>
+      </div>
+
+      {/* Results */}
+      {searchResults.length > 0 ? (
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {searchResults.map(product => (
+            <ProductCard 
+              key={product.id} 
+              product={product} 
+              onViewDetails={() => {}} // You can implement this
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <svg className="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">No products found</h2>
+          <p className="text-gray-600">Try adjusting your search terms or filters</p>
+        </div>
+      )}
+    </div>
+  );
+};
 const DealsSection = () => {
   const deals = [
     { discount: "40-70% OFF", category: "Men's Formal Shirts", subcategory: "Office & Business Wear", image: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
