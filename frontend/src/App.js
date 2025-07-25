@@ -2372,7 +2372,7 @@ const App = () => {
       case 'men':
         return <MensSection />;
       case 'women':
-        return <ProductsSection title="WOMEN'S COLLECTION" filter="womens_wear" />;
+        return <WomensSection />;
       case 'search':
         return <SearchResults searchQuery="search query" />;
       case 'brands':
