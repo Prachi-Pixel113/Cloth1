@@ -279,7 +279,10 @@ const Header = ({ currentView, setCurrentView }) => {
           {/* User Actions */}
           <div className="flex items-center space-x-6">
             {/* Profile */}
-            <div className="hidden md:flex flex-col items-center cursor-pointer group">
+            <div 
+              className="hidden md:flex flex-col items-center cursor-pointer group"
+              onClick={() => setCurrentView('profile')}
+            >
               <svg className="w-5 h-5 text-gray-700 group-hover:text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
@@ -287,7 +290,10 @@ const Header = ({ currentView, setCurrentView }) => {
             </div>
 
             {/* Wishlist */}
-            <div className="hidden md:flex flex-col items-center cursor-pointer group">
+            <div 
+              className="hidden md:flex flex-col items-center cursor-pointer group"
+              onClick={() => setCurrentView('wishlist')}
+            >
               <svg className="w-5 h-5 text-gray-700 group-hover:text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
