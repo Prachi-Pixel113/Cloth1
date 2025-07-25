@@ -550,6 +550,475 @@ class StyleHubEnhancedAPITester:
             self.log_test("Mark Review Helpful", False, f"Request failed: {str(e)}")
             return False
 
+    # ========== SALES SECTION TESTS ==========
+    def test_sales_products_endpoint_basic(self):
+        """Test GET /api/products/sale endpoint basic functionality"""
+        print("🧪 Testing Sales Products Endpoint (Basic)...")
+        
+        try:
+            response = self.session.get(f"{API_BASE}/products/sale")
+            
+            if response.status_code == 200:
+                products = response.json()
+                if isinstance(products, list):
+                    if products:
+                        # Verify all products have discount_percentage > 0
+                        all_have_discount = all(
+                            p.get('discount_percentage') is not None and p.get('discount_percentage') > 0 
+                            for p in products
+                        )
+                        if all_have_discount:
+                            self.log_test("Sales Products (Basic)", True, f"Found {len(products)} sale products, all with discounts > 0")
+                            return True
+                        else:
+                            self.log_test("Sales Products (Basic)", False, "Some products don't have discount_percentage > 0")
+                            return False
+                    else:
+                        self.log_test("Sales Products (Basic)", True, "No sale products found (valid if no discounted products exist)")
+                        return True
+                else:
+                    self.log_test("Sales Products (Basic)", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Sales Products (Basic)", False, f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Sales Products (Basic)", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_sales_products_category_filter(self):
+        """Test GET /api/products/sale with category filtering"""
+        print("🧪 Testing Sales Products Category Filtering...")
+        
+        # Test both men's and women's categories
+        categories_to_test = ["mens_shirts", "mens_tshirts", "womens_dresses", "womens_tops"]
+        
+        for category in categories_to_test:
+            try:
+                response = self.session.get(f"{API_BASE}/products/sale", params={"category": category})
+                
+                if response.status_code == 200:
+                    products = response.json()
+                    if isinstance(products, list):
+                        if products:
+                            # Verify all products match category and have discounts
+                            all_correct_category = all(p.get('category') == category for p in products)
+                            all_have_discount = all(
+                                p.get('discount_percentage') is not None and p.get('discount_percentage') > 0 
+                                for p in products
+                            )
+                            
+                            if all_correct_category and all_have_discount:
+                                self.log_test(f"Sales Category Filter ({category})", True, f"Found {len(products)} sale products in {category}")
+                            else:
+                                if not all_correct_category:
+                                    self.log_test(f"Sales Category Filter ({category})", False, f"Some products don't match {category}")
+                                else:
+                                    self.log_test(f"Sales Category Filter ({category})", False, "Some products don't have discounts")
+                                return False
+                        else:
+                            self.log_test(f"Sales Category Filter ({category})", True, f"No sale products in {category} (valid)")
+                    else:
+                        self.log_test(f"Sales Category Filter ({category})", False, "Invalid response format")
+                        return False
+                else:
+                    self.log_test(f"Sales Category Filter ({category})", False, f"HTTP {response.status_code}: {response.text}")
+                    return False
+                    
+            except Exception as e:
+                self.log_test(f"Sales Category Filter ({category})", False, f"Request failed: {str(e)}")
+                return False
+        
+        return True
+
+    def test_sales_products_brand_filter(self):
+        """Test GET /api/products/sale with brand filtering"""
+        print("🧪 Testing Sales Products Brand Filtering...")
+        
+        if not self.sample_brands:
+            self.log_test("Sales Brand Filter", False, "No sample brands available for testing")
+            return False
+        
+        # Test with first available brand
+        brand_id = self.sample_brands[0]['id']
+        
+        try:
+            response = self.session.get(f"{API_BASE}/products/sale", params={"brand_id": brand_id})
+            
+            if response.status_code == 200:
+                products = response.json()
+                if isinstance(products, list):
+                    if products:
+                        # Verify all products belong to the brand and have discounts
+                        all_correct_brand = all(p.get('brand_id') == brand_id for p in products)
+                        all_have_discount = all(
+                            p.get('discount_percentage') is not None and p.get('discount_percentage') > 0 
+                            for p in products
+                        )
+                        
+                        if all_correct_brand and all_have_discount:
+                            self.log_test("Sales Brand Filter", True, f"Found {len(products)} sale products for brand")
+                        else:
+                            if not all_correct_brand:
+                                self.log_test("Sales Brand Filter", False, "Some products don't belong to the requested brand")
+                            else:
+                                self.log_test("Sales Brand Filter", False, "Some products don't have discounts")
+                            return False
+                    else:
+                        self.log_test("Sales Brand Filter", True, "No sale products found for brand (valid)")
+                else:
+                    self.log_test("Sales Brand Filter", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Sales Brand Filter", False, f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Sales Brand Filter", False, f"Request failed: {str(e)}")
+            return False
+        
+        return True
+
+    def test_sales_products_price_filter(self):
+        """Test GET /api/products/sale with price range filtering"""
+        print("🧪 Testing Sales Products Price Filtering...")
+        
+        price_ranges = [
+            {"min_price": 20.0, "max_price": 60.0, "name": "Budget Range"},
+            {"min_price": 60.0, "max_price": 120.0, "name": "Mid Range"},
+            {"min_price": 120.0, "name": "Premium Range"}
+        ]
+        
+        for price_range in price_ranges:
+            try:
+                params = {}
+                if "min_price" in price_range:
+                    params["min_price"] = price_range["min_price"]
+                if "max_price" in price_range:
+                    params["max_price"] = price_range["max_price"]
+                
+                response = self.session.get(f"{API_BASE}/products/sale", params=params)
+                
+                if response.status_code == 200:
+                    products = response.json()
+                    if isinstance(products, list):
+                        if products:
+                            # Verify all products are within price range and have discounts
+                            valid_prices = True
+                            all_have_discount = True
+                            
+                            for product in products:
+                                price = product.get('price', 0)
+                                discount = product.get('discount_percentage', 0)
+                                
+                                if "min_price" in price_range and price < price_range["min_price"]:
+                                    valid_prices = False
+                                    break
+                                if "max_price" in price_range and price > price_range["max_price"]:
+                                    valid_prices = False
+                                    break
+                                if discount is None or discount <= 0:
+                                    all_have_discount = False
+                                    break
+                            
+                            if valid_prices and all_have_discount:
+                                self.log_test(f"Sales Price Filter ({price_range['name']})", True, f"Found {len(products)} sale products in price range")
+                            else:
+                                if not valid_prices:
+                                    self.log_test(f"Sales Price Filter ({price_range['name']})", False, "Some products outside price range")
+                                else:
+                                    self.log_test(f"Sales Price Filter ({price_range['name']})", False, "Some products don't have discounts")
+                                return False
+                        else:
+                            self.log_test(f"Sales Price Filter ({price_range['name']})", True, f"No sale products in {price_range['name']} (valid)")
+                    else:
+                        self.log_test(f"Sales Price Filter ({price_range['name']})", False, "Invalid response format")
+                        return False
+                else:
+                    self.log_test(f"Sales Price Filter ({price_range['name']})", False, f"HTTP {response.status_code}: {response.text}")
+                    return False
+                    
+            except Exception as e:
+                self.log_test(f"Sales Price Filter ({price_range['name']})", False, f"Request failed: {str(e)}")
+                return False
+        
+        return True
+
+    def test_sales_products_min_discount_filter(self):
+        """Test GET /api/products/sale with minimum discount filtering"""
+        print("🧪 Testing Sales Products Minimum Discount Filtering...")
+        
+        discount_thresholds = [10.0, 20.0, 30.0]
+        
+        for min_discount in discount_thresholds:
+            try:
+                response = self.session.get(f"{API_BASE}/products/sale", params={"min_discount": min_discount})
+                
+                if response.status_code == 200:
+                    products = response.json()
+                    if isinstance(products, list):
+                        if products:
+                            # Verify all products have discount >= min_discount
+                            all_meet_threshold = all(
+                                p.get('discount_percentage') is not None and p.get('discount_percentage') >= min_discount 
+                                for p in products
+                            )
+                            
+                            if all_meet_threshold:
+                                self.log_test(f"Sales Min Discount Filter ({min_discount}%)", True, f"Found {len(products)} products with discount >= {min_discount}%")
+                            else:
+                                self.log_test(f"Sales Min Discount Filter ({min_discount}%)", False, f"Some products have discount < {min_discount}%")
+                                return False
+                        else:
+                            self.log_test(f"Sales Min Discount Filter ({min_discount}%)", True, f"No products with discount >= {min_discount}% (valid)")
+                    else:
+                        self.log_test(f"Sales Min Discount Filter ({min_discount}%)", False, "Invalid response format")
+                        return False
+                else:
+                    self.log_test(f"Sales Min Discount Filter ({min_discount}%)", False, f"HTTP {response.status_code}: {response.text}")
+                    return False
+                    
+            except Exception as e:
+                self.log_test(f"Sales Min Discount Filter ({min_discount}%)", False, f"Request failed: {str(e)}")
+                return False
+        
+        return True
+
+    def test_sales_products_sorting(self):
+        """Test GET /api/products/sale with different sorting options"""
+        print("🧪 Testing Sales Products Sorting...")
+        
+        sort_options = ["discount_high", "discount_low", "price_low", "price_high", "rating", "newest", "popularity"]
+        
+        for sort_by in sort_options:
+            try:
+                response = self.session.get(f"{API_BASE}/products/sale", params={"sort_by": sort_by, "limit": 10})
+                
+                if response.status_code == 200:
+                    products = response.json()
+                    if isinstance(products, list):
+                        if len(products) >= 2:
+                            # Verify sorting is working and all have discounts
+                            sorted_correctly = True
+                            all_have_discount = all(
+                                p.get('discount_percentage') is not None and p.get('discount_percentage') > 0 
+                                for p in products
+                            )
+                            
+                            if not all_have_discount:
+                                self.log_test(f"Sales Sorting ({sort_by})", False, "Some products don't have discounts")
+                                return False
+                            
+                            for i in range(len(products) - 1):
+                                current = products[i]
+                                next_product = products[i + 1]
+                                
+                                if sort_by == "discount_high":
+                                    if current.get('discount_percentage', 0) < next_product.get('discount_percentage', 0):
+                                        sorted_correctly = False
+                                        break
+                                elif sort_by == "discount_low":
+                                    if current.get('discount_percentage', 0) > next_product.get('discount_percentage', 0):
+                                        sorted_correctly = False
+                                        break
+                                elif sort_by == "price_low":
+                                    if current.get('price', 0) > next_product.get('price', 0):
+                                        sorted_correctly = False
+                                        break
+                                elif sort_by == "price_high":
+                                    if current.get('price', 0) < next_product.get('price', 0):
+                                        sorted_correctly = False
+                                        break
+                                elif sort_by == "rating":
+                                    if current.get('average_rating', 0) < next_product.get('average_rating', 0):
+                                        sorted_correctly = False
+                                        break
+                            
+                            if sorted_correctly:
+                                self.log_test(f"Sales Sorting ({sort_by})", True, f"Sale products sorted correctly by {sort_by}")
+                            else:
+                                self.log_test(f"Sales Sorting ({sort_by})", False, f"Sale products not sorted correctly by {sort_by}")
+                                return False
+                        else:
+                            self.log_test(f"Sales Sorting ({sort_by})", True, f"Insufficient sale products to verify {sort_by} sorting (valid)")
+                    else:
+                        self.log_test(f"Sales Sorting ({sort_by})", False, "Invalid response format")
+                        return False
+                else:
+                    self.log_test(f"Sales Sorting ({sort_by})", False, f"HTTP {response.status_code}: {response.text}")
+                    return False
+                    
+            except Exception as e:
+                self.log_test(f"Sales Sorting ({sort_by})", False, f"Request failed: {str(e)}")
+                return False
+        
+        return True
+
+    def test_sales_products_pagination(self):
+        """Test GET /api/products/sale with limit and skip parameters"""
+        print("🧪 Testing Sales Products Pagination...")
+        
+        try:
+            # Test limit parameter
+            response = self.session.get(f"{API_BASE}/products/sale", params={"limit": 5})
+            
+            if response.status_code == 200:
+                products = response.json()
+                if isinstance(products, list):
+                    if len(products) <= 5:
+                        all_have_discount = all(
+                            p.get('discount_percentage') is not None and p.get('discount_percentage') > 0 
+                            for p in products
+                        )
+                        if all_have_discount:
+                            self.log_test("Sales Pagination (Limit)", True, f"Limit parameter working, got {len(products)} products")
+                        else:
+                            self.log_test("Sales Pagination (Limit)", False, "Some products don't have discounts")
+                            return False
+                    else:
+                        self.log_test("Sales Pagination (Limit)", False, f"Expected max 5 products, got {len(products)}")
+                        return False
+                else:
+                    self.log_test("Sales Pagination (Limit)", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Sales Pagination (Limit)", False, f"HTTP {response.status_code}: {response.text}")
+                return False
+            
+            # Test skip parameter
+            response = self.session.get(f"{API_BASE}/products/sale", params={"limit": 3, "skip": 2})
+            
+            if response.status_code == 200:
+                products = response.json()
+                if isinstance(products, list):
+                    if len(products) <= 3:
+                        all_have_discount = all(
+                            p.get('discount_percentage') is not None and p.get('discount_percentage') > 0 
+                            for p in products
+                        )
+                        if all_have_discount:
+                            self.log_test("Sales Pagination (Skip)", True, f"Skip parameter working, got {len(products)} products")
+                        else:
+                            self.log_test("Sales Pagination (Skip)", False, "Some products don't have discounts")
+                            return False
+                    else:
+                        self.log_test("Sales Pagination (Skip)", False, f"Expected max 3 products, got {len(products)}")
+                        return False
+                else:
+                    self.log_test("Sales Pagination (Skip)", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Sales Pagination (Skip)", False, f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Sales Pagination", False, f"Request failed: {str(e)}")
+            return False
+        
+        return True
+
+    def test_sales_products_response_format(self):
+        """Test that sales products response matches Product model format"""
+        print("🧪 Testing Sales Products Response Format...")
+        
+        try:
+            response = self.session.get(f"{API_BASE}/products/sale", params={"limit": 1})
+            
+            if response.status_code == 200:
+                products = response.json()
+                if isinstance(products, list) and products:
+                    product = products[0]
+                    
+                    # Check required Product model fields
+                    required_fields = ['id', 'name', 'description', 'price', 'category', 'sizes', 'colors', 'stock_quantity', 'discount_percentage']
+                    optional_fields = ['brand_id', 'brand_name', 'tags', 'materials', 'average_rating', 'review_count', 'view_count', 'featured']
+                    
+                    missing_required = [field for field in required_fields if field not in product]
+                    present_optional = [field for field in optional_fields if field in product]
+                    
+                    # Verify discount_percentage > 0
+                    discount = product.get('discount_percentage')
+                    has_valid_discount = discount is not None and discount > 0
+                    
+                    if not missing_required and has_valid_discount:
+                        self.log_test("Sales Response Format", True, f"Product model format correct, has {len(present_optional)} optional fields, discount: {discount}%")
+                        return True
+                    else:
+                        if missing_required:
+                            self.log_test("Sales Response Format", False, f"Missing required fields: {missing_required}")
+                        else:
+                            self.log_test("Sales Response Format", False, f"Invalid discount_percentage: {discount}")
+                        return False
+                else:
+                    self.log_test("Sales Response Format", True, "No sale products to verify format (valid)")
+                    return True
+            else:
+                self.log_test("Sales Response Format", False, f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Sales Response Format", False, f"Request failed: {str(e)}")
+            return False
+
+    # ========== EXISTING API COMPATIBILITY TESTS ==========
+    def test_existing_products_endpoint(self):
+        """Test that existing /api/products endpoint still works correctly"""
+        print("🧪 Testing Existing Products Endpoint Compatibility...")
+        
+        try:
+            response = self.session.get(f"{API_BASE}/products")
+            
+            if response.status_code == 200:
+                products = response.json()
+                if isinstance(products, list):
+                    self.log_test("Existing Products Endpoint", True, f"Retrieved {len(products)} products successfully")
+                    return True
+                else:
+                    self.log_test("Existing Products Endpoint", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Existing Products Endpoint", False, f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Existing Products Endpoint", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_existing_womens_products_endpoint(self):
+        """Test that existing /api/products/women endpoint still works correctly"""
+        print("🧪 Testing Existing Women's Products Endpoint Compatibility...")
+        
+        try:
+            response = self.session.get(f"{API_BASE}/products/women")
+            
+            if response.status_code == 200:
+                products = response.json()
+                if isinstance(products, list):
+                    if products:
+                        womens_categories = ["womens_dresses", "womens_tops", "womens_blouses", "womens_skirts", 
+                                           "womens_jeans", "womens_ethnic", "womens_formal", "womens_casual", "womens_sportswear"]
+                        all_womens_products = all(p.get('category') in womens_categories for p in products)
+                        
+                        if all_womens_products:
+                            self.log_test("Existing Women's Products Endpoint", True, f"Retrieved {len(products)} women's products successfully")
+                        else:
+                            self.log_test("Existing Women's Products Endpoint", False, "Some products are not women's categories")
+                            return False
+                    else:
+                        self.log_test("Existing Women's Products Endpoint", True, "No women's products found (valid)")
+                    return True
+                else:
+                    self.log_test("Existing Women's Products Endpoint", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Existing Women's Products Endpoint", False, f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Existing Women's Products Endpoint", False, f"Request failed: {str(e)}")
+            return False
+
     # ========== MEN'S SECTION TESTS ==========
     def test_mens_products_endpoint(self):
         """Test GET /api/products/men endpoint with various filters"""
