@@ -121,36 +121,67 @@ const Header = ({ currentView, setCurrentView }) => {
           </div>
 
           {/* Main Navigation - Desktop */}
-          <nav className="hidden lg:flex items-center space-x-8">
+          <nav className="hidden lg:flex items-center space-x-12">
+            <div className="relative group">
+              <button 
+                className="text-sm font-bold text-gray-800 hover:text-pink-600 transition-colors tracking-wide py-2"
+                onClick={() => setCurrentView('men')}
+              >
+                MEN
+              </button>
+              {/* Men's Dropdown Menu */}
+              <div className="absolute top-full left-0 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white shadow-lg border-t-2 border-pink-600 mt-1 w-64 z-50">
+                <div className="p-4">
+                  <div className="grid grid-cols-1 gap-2">
+                    <a href="#" className="text-sm text-gray-700 hover:text-pink-600 py-1">Shirts & T-Shirts</a>
+                    <a href="#" className="text-sm text-gray-700 hover:text-pink-600 py-1">Formal Shirts</a>
+                    <a href="#" className="text-sm text-gray-700 hover:text-pink-600 py-1">Jeans & Pants</a>
+                    <a href="#" className="text-sm text-gray-700 hover:text-pink-600 py-1">Ethnic Wear</a>
+                    <a href="#" className="text-sm text-gray-700 hover:text-pink-600 py-1">Blazers & Suits</a>
+                    <a href="#" className="text-sm text-gray-700 hover:text-pink-600 py-1">Activewear</a>
+                    <a href="#" className="text-sm text-gray-700 hover:text-pink-600 py-1">Footwear</a>
+                    <a href="#" className="text-sm text-gray-700 hover:text-pink-600 py-1">Accessories</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="relative group">
+              <button 
+                className="text-sm font-bold text-gray-800 hover:text-pink-600 transition-colors tracking-wide py-2"
+                onClick={() => setCurrentView('women')}
+              >
+                WOMEN
+              </button>
+              {/* Women's Dropdown Menu */}
+              <div className="absolute top-full left-0 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white shadow-lg border-t-2 border-pink-600 mt-1 w-64 z-50">
+                <div className="p-4">
+                  <div className="grid grid-cols-1 gap-2">
+                    <a href="#" className="text-sm text-gray-700 hover:text-pink-600 py-1">Kurtas & Suits</a>
+                    <a href="#" className="text-sm text-gray-700 hover:text-pink-600 py-1">Sarees & Lehengas</a>
+                    <a href="#" className="text-sm text-gray-700 hover:text-pink-600 py-1">Dresses & Jumpsuits</a>
+                    <a href="#" className="text-sm text-gray-700 hover:text-pink-600 py-1">Tops & Tunics</a>
+                    <a href="#" className="text-sm text-gray-700 hover:text-pink-600 py-1">Jeans & Pants</a>
+                    <a href="#" className="text-sm text-gray-700 hover:text-pink-600 py-1">Activewear</a>
+                    <a href="#" className="text-sm text-gray-700 hover:text-pink-600 py-1">Footwear</a>
+                    <a href="#" className="text-sm text-gray-700 hover:text-pink-600 py-1">Lingerie & Sleepwear</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
             <button 
               className="text-sm font-bold text-gray-800 hover:text-pink-600 transition-colors tracking-wide"
-              onClick={() => setCurrentView('men')}
+              onClick={() => setCurrentView('brands')}
             >
-              MEN
+              BRANDS
             </button>
+            
             <button 
               className="text-sm font-bold text-gray-800 hover:text-pink-600 transition-colors tracking-wide"
-              onClick={() => setCurrentView('women')}
+              onClick={() => setCurrentView('sale')}
             >
-              WOMEN
-            </button>
-            <button 
-              className="text-sm font-bold text-gray-800 hover:text-pink-600 transition-colors tracking-wide"
-              onClick={() => setCurrentView('kids')}
-            >
-              KIDS
-            </button>
-            <button 
-              className="text-sm font-bold text-gray-800 hover:text-pink-600 transition-colors tracking-wide"
-              onClick={() => setCurrentView('home-living')}
-            >
-              HOME & LIVING
-            </button>
-            <button 
-              className="text-sm font-bold text-gray-800 hover:text-pink-600 transition-colors tracking-wide"
-              onClick={() => setCurrentView('beauty')}
-            >
-              BEAUTY
+              SALE
             </button>
           </nav>
 
