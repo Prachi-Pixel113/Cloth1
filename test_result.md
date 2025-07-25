@@ -327,15 +327,18 @@ frontend:
 
   - task: "Men's Product Cards with Badges and Hover Effects"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Created responsive product cards with badges (BESTSELLER, HOT DEAL, NEW), hover effects with scale and shadow transitions, quick actions on hover (ADD TO BAG, QUICK VIEW), wishlist button, ratings display, and discount pricing."
+        - working: true
+          agent: "testing"
+          comment: "✅ Men's Product Cards are working excellently. Found 14 product cards with proper badges (BESTSELLER visible), hover effects working with scale transitions, quick action buttons (ADD TO BAG, QUICK VIEW) appearing on hover, wishlist heart icons functional (14 found), ratings display with green badges, and discount pricing with crossed-out original prices. All card functionality confirmed including responsive grid layout."
 
   - task: "Sort Dropdown with Multiple Options"
     implemented: true
