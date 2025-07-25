@@ -1920,6 +1920,7 @@ const SalesSection = () => {
 
   const ProductCard = ({ product }) => {
     const { addToCart } = useCart();
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
     const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
     const [selectedColor, setSelectedColor] = useState(product.colors[0]);
     const [isHovered, setIsHovered] = useState(false);
@@ -1928,6 +1929,23 @@ const SalesSection = () => {
       e.stopPropagation();
       addToCart(product.id, selectedSize, selectedColor, 1);
       alert('Added to bag!');
+    };
+
+    const handleWishlistToggle = async (e) => {
+      e.stopPropagation();
+      if (isInWishlist(product.id)) {
+        const success = await removeFromWishlist(product.id);
+        if (success) {
+          alert('Removed from wishlist!');
+        }
+      } else {
+        const success = await addToWishlist(product.id);
+        if (success) {
+          alert('Added to wishlist!');
+        } else {
+          alert('Item already in wishlist!');
+        }
+      }
     };
 
     const discountPrice = product.discount_percentage 
