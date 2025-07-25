@@ -104,6 +104,49 @@ const useCart = () => {
 const Header = ({ currentView, setCurrentView }) => {
   const { cartTotal } = useCart();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchSuggestions, setSearchSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Fetch search suggestions
+  const fetchSuggestions = async (query) => {
+    if (query.length < 2) {
+      setSearchSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+    
+    try {
+      const response = await axios.get(`${API}/products/suggestions?q=${encodeURIComponent(query)}`);
+      setSearchSuggestions(response.data.suggestions || []);
+      setShowSuggestions(true);
+    } catch (error) {
+      console.error('Error fetching suggestions:', error);
+      setSearchSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    fetchSuggestions(query);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setCurrentView('search');
+      setShowSuggestions(false);
+      // You can add search functionality here
+    }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setSearchQuery(suggestion);
+    setShowSuggestions(false);
+    setCurrentView('search');
+  };
 
   return (
     <header className="bg-white border-b shadow-sm sticky top-0 z-50">
