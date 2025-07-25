@@ -276,6 +276,18 @@ backend:
           agent: "main"
           comment: "Implemented sale-themed design with red/pink color scheme, animated promotional elements, flash sale alerts, prominent discount displays, and sale-focused typography. Added loading states, empty states, and smooth transitions throughout with sale-appropriate messaging."
 
+  - task: "Wishlist Icon Integration Across All Collections"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Connected wishlist icons in all ProductCard components to wishlist functionality. Updated Men's Section, Women's Section, Sales Section, and General ProductCard components to include wishlist context, handleWishlistToggle function, and proper heart icon state management. Heart icons now show filled state (red) when item is in wishlist and empty state when not. All wishlist buttons now properly add/remove items from wishlist and provide user feedback."
+
 frontend:
   - task: "Men's Section Hero Banner"
     implemented: true
