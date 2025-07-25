@@ -893,6 +893,120 @@ async def get_orders(session_id: str):
     orders = await db.orders.find({"session_id": session_id}).to_list(100)
     return [Order(**order) for order in orders]
 
+# User Profile routes
+@api_router.get("/profile/{session_id}", response_model=UserProfile)
+async def get_user_profile(session_id: str):
+    """Get user profile by session ID"""
+    profile = await db.user_profiles.find_one({"session_id": session_id})
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found")
+    return UserProfile(**profile)
+
+@api_router.post("/profile", response_model=UserProfile)
+async def create_user_profile(profile: UserProfileCreate):
+    """Create a new user profile"""
+    # Check if profile already exists
+    existing_profile = await db.user_profiles.find_one({"session_id": profile.session_id})
+    if existing_profile:
+        raise HTTPException(status_code=400, detail="Profile already exists for this session")
+    
+    profile_dict = profile.dict()
+    profile_obj = UserProfile(**profile_dict)
+    await db.user_profiles.insert_one(profile_obj.dict())
+    return profile_obj
+
+@api_router.put("/profile/{session_id}", response_model=UserProfile)
+async def update_user_profile(session_id: str, profile_update: UserProfileUpdate):
+    """Update user profile"""
+    update_data = {k: v for k, v in profile_update.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.utcnow()
+    
+    result = await db.user_profiles.update_one(
+        {"session_id": session_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Profile not found")
+    
+    updated_profile = await db.user_profiles.find_one({"session_id": session_id})
+    return UserProfile(**updated_profile)
+
+@api_router.delete("/profile/{session_id}")
+async def delete_user_profile(session_id: str):
+    """Delete user profile"""
+    result = await db.user_profiles.delete_one({"session_id": session_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Profile not found")
+    return {"message": "Profile deleted successfully"}
+
+# Wishlist routes
+@api_router.get("/wishlist/{session_id}", response_model=List[dict])
+async def get_user_wishlist(session_id: str):
+    """Get user's wishlist with full product details"""
+    wishlist_items = await db.wishlist_items.find({"session_id": session_id}).to_list(100)
+    
+    # Get full product details for wishlist items
+    wishlist_with_products = []
+    for item in wishlist_items:
+        product = await db.products.find_one({"id": item["product_id"]})
+        if product:
+            wishlist_item = {
+                "wishlist_id": item["id"],
+                "added_at": item["added_at"],
+                "product": Product(**product)
+            }
+            wishlist_with_products.append(wishlist_item)
+    
+    return wishlist_with_products
+
+@api_router.post("/wishlist", response_model=WishlistItem)
+async def add_to_wishlist(wishlist_item: WishlistItemCreate):
+    """Add product to wishlist"""
+    # Check if product exists
+    product = await db.products.find_one({"id": wishlist_item.product_id})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Check if item already in wishlist
+    existing_item = await db.wishlist_items.find_one({
+        "session_id": wishlist_item.session_id,
+        "product_id": wishlist_item.product_id
+    })
+    
+    if existing_item:
+        raise HTTPException(status_code=400, detail="Product already in wishlist")
+    
+    wishlist_item_dict = wishlist_item.dict()
+    wishlist_item_obj = WishlistItem(**wishlist_item_dict)
+    await db.wishlist_items.insert_one(wishlist_item_obj.dict())
+    return wishlist_item_obj
+
+@api_router.delete("/wishlist/{session_id}/{product_id}")
+async def remove_from_wishlist(session_id: str, product_id: str):
+    """Remove product from wishlist"""
+    result = await db.wishlist_items.delete_one({
+        "session_id": session_id,
+        "product_id": product_id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Item not found in wishlist")
+    
+    return {"message": "Item removed from wishlist"}
+
+@api_router.delete("/wishlist/clear/{session_id}")
+async def clear_wishlist(session_id: str):
+    """Clear entire wishlist for a session"""
+    await db.wishlist_items.delete_many({"session_id": session_id})
+    return {"message": "Wishlist cleared"}
+
+@api_router.get("/wishlist/count/{session_id}")
+async def get_wishlist_count(session_id: str):
+    """Get count of items in wishlist"""
+    count = await db.wishlist_items.count_documents({"session_id": session_id})
+    return {"count": count}
+
 # Initialize sample data
 @api_router.post("/init-data")
 async def initialize_sample_data():
