@@ -2262,6 +2262,518 @@ const SalesSection = () => {
   );
 };
 
+// Profile Section Component
+const ProfileSection = () => {
+  const { sessionId } = useCart();
+  const [profile, setProfile] = useState(null);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [activeTab, setActiveTab] = useState('profile');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    date_of_birth: '',
+    gender: ''
+  });
+
+  useEffect(() => {
+    fetchProfile();
+    fetchOrders();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await axios.get(`${API}/profile/${sessionId}`);
+      setProfile(response.data);
+      setFormData({
+        name: response.data.name || '',
+        email: response.data.email || '',
+        phone: response.data.phone || '',
+        date_of_birth: response.data.date_of_birth || '',
+        gender: response.data.gender || ''
+      });
+    } catch (error) {
+      if (error.response?.status === 404) {
+        // Profile doesn't exist yet
+        setProfile(null);
+      } else {
+        console.error('Error fetching profile:', error);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchOrders = async () => {
+    try {
+      const response = await axios.get(`${API}/orders/${sessionId}`);
+      setOrders(response.data);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      if (profile) {
+        // Update existing profile
+        await axios.put(`${API}/profile/${sessionId}`, formData);
+      } else {
+        // Create new profile
+        await axios.post(`${API}/profile`, { ...formData, session_id: sessionId });
+      }
+      setEditing(false);
+      fetchProfile();
+      alert('Profile saved successfully!');
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      alert('Error saving profile. Please try again.');
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="bg-white rounded-lg shadow-sm">
+          {/* Header */}
+          <div className="border-b border-gray-200 px-6 py-4">
+            <h1 className="text-2xl font-bold text-gray-800">My Account</h1>
+            <p className="text-gray-600">Manage your profile and orders</p>
+          </div>
+
+          {/* Tabs */}
+          <div className="border-b border-gray-200">
+            <nav className="flex px-6">
+              <button
+                onClick={() => setActiveTab('profile')}
+                className={`py-4 px-6 border-b-2 font-medium text-sm ${
+                  activeTab === 'profile'
+                    ? 'border-pink-600 text-pink-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Profile Information
+              </button>
+              <button
+                onClick={() => setActiveTab('orders')}
+                className={`py-4 px-6 border-b-2 font-medium text-sm ${
+                  activeTab === 'orders'
+                    ? 'border-pink-600 text-pink-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Order History
+              </button>
+            </nav>
+          </div>
+
+          {/* Content */}
+          <div className="p-6">
+            {activeTab === 'profile' && (
+              <div>
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-semibold text-gray-800">Profile Information</h2>
+                  {!editing && (
+                    <button
+                      onClick={() => setEditing(true)}
+                      className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors"
+                    >
+                      {profile ? 'Edit Profile' : 'Create Profile'}
+                    </button>
+                  )}
+                </div>
+
+                {editing ? (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                        <input
+                          type="text"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleInputChange}
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                          placeholder="Enter your full name"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                          placeholder="Enter your email"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                        <input
+                          type="tel"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                          placeholder="Enter your phone number"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
+                        <input
+                          type="date"
+                          name="date_of_birth"
+                          value={formData.date_of_birth}
+                          onChange={handleInputChange}
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                        <select
+                          name="gender"
+                          value={formData.gender}
+                          onChange={handleInputChange}
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                        >
+                          <option value="">Select gender</option>
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="flex space-x-4 pt-4">
+                      <button
+                        onClick={handleSaveProfile}
+                        className="bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700 transition-colors"
+                      >
+                        Save Profile
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditing(false);
+                          if (profile) {
+                            setFormData({
+                              name: profile.name || '',
+                              email: profile.email || '',
+                              phone: profile.phone || '',
+                              date_of_birth: profile.date_of_birth || '',
+                              gender: profile.gender || ''
+                            });
+                          }
+                        }}
+                        className="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    {profile ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-500 mb-1">Full Name</label>
+                          <p className="text-gray-800">{profile.name || 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-500 mb-1">Email</label>
+                          <p className="text-gray-800">{profile.email || 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-500 mb-1">Phone</label>
+                          <p className="text-gray-800">{profile.phone || 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-500 mb-1">Date of Birth</label>
+                          <p className="text-gray-800">{profile.date_of_birth || 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-500 mb-1">Gender</label>
+                          <p className="text-gray-800 capitalize">{profile.gender || 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-500 mb-1">Member Since</label>
+                          <p className="text-gray-800">{new Date(profile.created_at).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <h3 className="text-lg font-medium text-gray-800 mb-2">No Profile Found</h3>
+                        <p className="text-gray-600 mb-4">Create your profile to get personalized recommendations</p>
+                        <button
+                          onClick={() => setEditing(true)}
+                          className="bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700 transition-colors"
+                        >
+                          Create Profile
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'orders' && (
+              <div>
+                <h2 className="text-xl font-semibold text-gray-800 mb-6">Order History</h2>
+                {orders.length > 0 ? (
+                  <div className="space-y-4">
+                    {orders.map(order => (
+                      <div key={order.id} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <h3 className="font-semibold text-gray-800">Order #{order.id.slice(-8)}</h3>
+                            <p className="text-sm text-gray-600">{new Date(order.created_at).toLocaleDateString()}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-semibold text-gray-800">₹{order.total_amount.toFixed(2)}</p>
+                            <span className={`inline-block px-2 py-1 text-xs rounded-full ${
+                              order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                              order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {order.status.toUpperCase()}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          {order.items.map((item, index) => (
+                            <div key={index} className="flex justify-between text-sm">
+                              <span>{item.product_name} x {item.quantity}</span>
+                              <span>₹{item.total.toFixed(2)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M8 11h8l1 9H7l1-9z" />
+                    </svg>
+                    <h3 className="text-lg font-medium text-gray-800 mb-2">No Orders Found</h3>
+                    <p className="text-gray-600">You haven't placed any orders yet</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Wishlist Section Component
+const WishlistSection = () => {
+  const { sessionId, addToCart } = useCart();
+  const [wishlistItems, setWishlistItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchWishlist();
+  }, []);
+
+  const fetchWishlist = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API}/wishlist/${sessionId}`);
+      setWishlistItems(response.data);
+    } catch (error) {
+      console.error('Error fetching wishlist:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const removeFromWishlist = async (productId) => {
+    try {
+      await axios.delete(`${API}/wishlist/${sessionId}/${productId}`);
+      setWishlistItems(wishlistItems.filter(item => item.product.id !== productId));
+    } catch (error) {
+      console.error('Error removing from wishlist:', error);
+      alert('Error removing item from wishlist');
+    }
+  };
+
+  const handleAddToCart = async (product) => {
+    try {
+      await addToCart(product.id, product.sizes[0], product.colors[0], 1);
+      alert('Added to bag!');
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      alert('Error adding to bag');
+    }
+  };
+
+  const clearWishlist = async () => {
+    if (window.confirm('Are you sure you want to clear your entire wishlist?')) {
+      try {
+        await axios.delete(`${API}/wishlist/clear/${sessionId}`);
+        setWishlistItems([]);
+      } catch (error) {
+        console.error('Error clearing wishlist:', error);
+        alert('Error clearing wishlist');
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading wishlist...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">My Wishlist</h1>
+            <p className="text-gray-600">{wishlistItems.length} item{wishlistItems.length !== 1 ? 's' : ''} saved for later</p>
+          </div>
+
+          {wishlistItems.length > 0 && (
+            <button
+              onClick={clearWishlist}
+              className="text-red-600 hover:text-red-800 font-medium"
+            >
+              Clear All
+            </button>
+          )}
+        </div>
+
+        {wishlistItems.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {wishlistItems.map(item => {
+              const product = item.product;
+              const discountPrice = product.discount_percentage 
+                ? (product.price * (100 - product.discount_percentage) / 100).toFixed(2)
+                : product.price.toFixed(2);
+
+              return (
+                <div key={item.wishlist_id} className="bg-white rounded-lg shadow-sm overflow-hidden group">
+                  <div className="relative">
+                    <img 
+                      src={product.images[0]} 
+                      alt={product.name}
+                      className="w-full aspect-[3/4] object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    
+                    {/* Remove from Wishlist */}
+                    <button
+                      onClick={() => removeFromWishlist(product.id)}
+                      className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-all"
+                    >
+                      <svg className="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                      </svg>
+                    </button>
+
+                    {product.discount_percentage > 0 && (
+                      <div className="absolute top-3 left-3">
+                        <span className="bg-red-600 text-white px-2 py-1 text-xs font-bold rounded-full">
+                          -{product.discount_percentage}%
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-4">
+                    <h3 className="font-bold text-gray-800 text-sm mb-1 line-clamp-1">{product.brand_name}</h3>
+                    <p className="text-xs text-gray-500 mb-2 line-clamp-1">{product.name}</p>
+                    
+                    <div className="flex items-center space-x-2 mb-3">
+                      <span className="font-bold text-gray-800">₹{discountPrice}</span>
+                      {product.discount_percentage > 0 && (
+                        <>
+                          <span className="text-xs text-gray-400 line-through">₹{product.price.toFixed(2)}</span>
+                          <span className="text-xs text-green-600 font-medium">({product.discount_percentage}% OFF)</span>
+                        </>
+                      )}
+                    </div>
+
+                    <div className="flex items-center space-x-1 mb-3">
+                      <div className="flex items-center bg-green-600 text-white px-1 py-0.5 rounded text-xs">
+                        <span>{product.average_rating}</span>
+                        <svg className="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      </div>
+                      <span className="text-xs text-gray-500">({product.review_count})</span>
+                    </div>
+
+                    <button
+                      onClick={() => handleAddToCart(product)}
+                      className="w-full bg-pink-600 text-white py-2 font-bold text-sm rounded hover:bg-pink-700 transition-colors"
+                    >
+                      MOVE TO BAG
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <svg className="w-20 h-20 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Your Wishlist is Empty</h2>
+            <p className="text-gray-600 mb-8">Save items you love by clicking the heart icon on any product</p>
+            <div className="space-y-4">
+              <button 
+                onClick={() => window.location.href = '#men'}
+                className="bg-pink-600 text-white px-8 py-3 font-bold rounded-lg hover:bg-pink-700 transition-colors mr-4"
+              >
+                Shop Men's Collection
+              </button>
+              <button 
+                onClick={() => window.location.href = '#women'}
+                className="border-2 border-pink-600 text-pink-600 px-8 py-3 font-bold rounded-lg hover:bg-pink-600 hover:text-white transition-colors"
+              >
+                Shop Women's Collection
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const DealsSection = () => {
   const deals = [
     { discount: "40-70% OFF", category: "Men's Formal Shirts", subcategory: "Office & Business Wear", image: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
