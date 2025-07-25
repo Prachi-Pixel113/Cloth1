@@ -256,7 +256,7 @@ const Header = ({ currentView, setCurrentView }) => {
 };
 
 // Enhanced Hero Banner Section
-const HeroBanners = () => {
+const HeroBanners = ({ setCurrentView }) => {
   const [currentBanner, setCurrentBanner] = useState(0);
   
   const banners = [
