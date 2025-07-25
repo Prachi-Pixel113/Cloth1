@@ -262,30 +262,47 @@ const HeroBanners = () => {
   const banners = [
     {
       id: 1,
-      image: "https://images.unsplash.com/photo-1445205170230-053b83016050?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwzfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85",
-      title: "BIGGEST FASHION SALE",
-      subtitle: "UP TO 70% OFF + FREE SHIPPING",
-      description: "On trending styles & bestsellers",
-      cta: "SHOP NOW",
-      ctaSecondary: "EXPLORE DEALS"
+      image: "https://images.unsplash.com/photo-1562572159-4efc207f5aff",
+      title: "WINTER FASHION COLLECTION",
+      subtitle: "UP TO 60% OFF + FREE SHIPPING",
+      description: "Discover the latest trends in winter fashion",
+      cta: "SHOP WOMEN",
+      ctaSecondary: "SHOP MEN",
+      ctaLink: "women",
+      ctaSecondaryLink: "men"
     },
     {
       id: 2,
-      image: "https://images.unsplash.com/photo-1562572159-4efc207f5aff?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwbW9kZWx8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85",
-      title: "NEW ARRIVALS",
-      subtitle: "FRESH STYLES WEEKLY",
-      description: "Discover the latest trends",
-      cta: "EXPLORE NEW",
-      ctaSecondary: "VIEW ALL"
+      image: "https://images.unsplash.com/photo-1568252542512-9fe8fe9c87bb",
+      title: "PREMIUM COLLECTION",
+      subtitle: "LUXURY REDEFINED",
+      description: "Exclusive designer pieces for the discerning fashionista",
+      cta: "EXPLORE PREMIUM",
+      ctaSecondary: "VIEW BRANDS",
+      ctaLink: "women",
+      ctaSecondaryLink: "brands"
     },
     {
       id: 3,
-      image: "https://images.unsplash.com/photo-1568252542512-9fe8fe9c87bb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwyfHxmYXNoaW9uJTIwbW9kZWx8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85",
-      title: "PREMIUM COLLECTION",
-      subtitle: "LUXURY REDEFINED",
-      description: "Exclusive designer pieces",
-      cta: "SHOP LUXURY",
-      ctaSecondary: "VIEW COLLECTION"
+      image: "https://images.unsplash.com/photo-1578632292335-df3abbb0d586",
+      title: "NEW ARRIVALS",
+      subtitle: "FRESH STYLES WEEKLY",
+      description: "Stay ahead with the latest fashion trends",
+      cta: "SHOP NEW",
+      ctaSecondary: "VIEW ALL",
+      ctaLink: "women",
+      ctaSecondaryLink: "men"
+    },
+    {
+      id: 4,
+      image: "https://images.unsplash.com/photo-1678637803384-947954f11c10",
+      title: "WORK WEAR COLLECTION",
+      subtitle: "PROFESSIONAL ELEGANCE",
+      description: "Power dressing for the modern professional",
+      cta: "SHOP WORK WEAR",
+      ctaSecondary: "FORMAL COLLECTION",
+      ctaLink: "women",
+      ctaSecondaryLink: "men"
     }
   ];
 
@@ -293,7 +310,7 @@ const HeroBanners = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentBanner((prev) => (prev + 1) % banners.length);
-    }, 5000);
+    }, 6000); // Slower rotation for better user experience
     return () => clearInterval(interval);
   }, [banners.length]);
 
@@ -304,39 +321,45 @@ const HeroBanners = () => {
         {banners.map((banner, index) => (
           <div 
             key={banner.id} 
-            className={`transition-transform duration-500 ease-in-out ${
-              index === currentBanner ? 'translate-x-0' : 
-              index < currentBanner ? '-translate-x-full' : 'translate-x-full'
+            className={`transition-all duration-700 ease-in-out ${
+              index === currentBanner ? 'translate-x-0 opacity-100' : 
+              index < currentBanner ? '-translate-x-full opacity-0' : 'translate-x-full opacity-0'
             } ${index !== currentBanner ? 'absolute inset-0' : ''}`}
           >
             <div className="relative">
               <img 
                 src={banner.image} 
                 alt={banner.title}
-                className="w-full h-72 md:h-96 lg:h-[500px] object-cover"
+                className="w-full h-80 md:h-96 lg:h-[600px] object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent">
+              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent">
                 <div className="container mx-auto px-4 h-full flex items-center">
-                  <div className="max-w-2xl text-white">
-                    <div className="mb-4">
-                      <span className="inline-block bg-pink-600 text-white px-3 py-1 text-xs font-bold uppercase tracking-wide rounded-full mb-4">
-                        Limited Time
+                  <div className="max-w-3xl text-white">
+                    <div className="mb-6">
+                      <span className="inline-block bg-gradient-to-r from-pink-600 to-purple-600 text-white px-4 py-2 text-sm font-bold uppercase tracking-wide rounded-full mb-6 shadow-lg">
+                        Limited Time Offer
                       </span>
                     </div>
-                    <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight banner-text">
+                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight banner-text bg-gradient-to-r from-white to-gray-200 bg-clip-text">
                       {banner.title}
                     </h1>
-                    <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-yellow-400 mb-3 banner-text">
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-yellow-400 mb-4 banner-text drop-shadow-lg">
                       {banner.subtitle}
                     </h2>
-                    <p className="text-lg md:text-xl mb-8 opacity-90 banner-text">
+                    <p className="text-xl md:text-2xl mb-10 opacity-90 banner-text leading-relaxed">
                       {banner.description}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4">
-                      <button className="bg-pink-600 hover:bg-pink-700 text-white px-8 py-4 font-bold text-sm uppercase tracking-wide transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                      <button 
+                        className="bg-gradient-to-r from-pink-600 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white px-10 py-4 font-bold text-lg uppercase tracking-wide transition-all duration-300 transform hover:scale-105 hover:shadow-2xl rounded-full"
+                        onClick={() => setCurrentView(banner.ctaLink)}
+                      >
                         {banner.cta}
                       </button>
-                      <button className="border-2 border-white text-white hover:bg-white hover:text-gray-900 px-8 py-4 font-bold text-sm uppercase tracking-wide transition-all duration-300">
+                      <button 
+                        className="border-2 border-white text-white hover:bg-white hover:text-gray-900 px-10 py-4 font-bold text-lg uppercase tracking-wide transition-all duration-300 rounded-full backdrop-blur-sm"
+                        onClick={() => setCurrentView(banner.ctaSecondaryLink)}
+                      >
                         {banner.ctaSecondary}
                       </button>
                     </div>
@@ -348,60 +371,60 @@ const HeroBanners = () => {
         ))}
       </div>
 
-      {/* Banner Indicators */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2">
+      {/* Enhanced Banner Indicators */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3">
         {banners.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentBanner(index)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+            className={`w-4 h-4 rounded-full transition-all duration-300 ${
               index === currentBanner 
-                ? 'bg-white scale-125' 
-                : 'bg-white/50 hover:bg-white/75'
+                ? 'bg-white scale-125 shadow-lg' 
+                : 'bg-white/50 hover:bg-white/75 hover:scale-110'
             }`}
           />
         ))}
       </div>
 
-      {/* Navigation Arrows */}
+      {/* Enhanced Navigation Arrows */}
       <button 
         onClick={() => setCurrentBanner((prev) => (prev - 1 + banners.length) % banners.length)}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-300 backdrop-blur-sm"
+        className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-4 rounded-full transition-all duration-300 backdrop-blur-md shadow-lg hover:scale-110"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
       </button>
       <button 
         onClick={() => setCurrentBanner((prev) => (prev + 1) % banners.length)}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-300 backdrop-blur-sm"
+        className="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-4 rounded-full transition-all duration-300 backdrop-blur-md shadow-lg hover:scale-110"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
       </button>
 
-      {/* Promotional Strip */}
-      <div className="bg-gradient-to-r from-pink-600 to-purple-600 text-white py-3">
+      {/* Enhanced Promotional Strip */}
+      <div className="bg-gradient-to-r from-pink-600 via-purple-600 to-pink-600 text-white py-4">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center space-x-8 text-sm font-medium">
+          <div className="flex items-center justify-center space-x-12 text-sm font-medium animate-pulse">
             <div className="flex items-center space-x-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
               </svg>
-              <span>FREE SHIPPING</span>
+              <span className="uppercase tracking-wide">FREE SHIPPING ABOVE ₹999</span>
             </div>
             <div className="flex items-center space-x-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
               </svg>
-              <span>EASY RETURNS</span>
+              <span className="uppercase tracking-wide">EASY 30-DAY RETURNS</span>
             </div>
             <div className="flex items-center space-x-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
-              <span>100% AUTHENTIC</span>
+              <span className="uppercase tracking-wide">100% AUTHENTIC PRODUCTS</span>
             </div>
           </div>
         </div>
