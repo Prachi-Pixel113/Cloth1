@@ -1880,8 +1880,11 @@ const App = () => {
       case 'cart':
         return <CartPage />;
       case 'men':
+        return <MensSection />;
       case 'women':
-        return <ProductsSection title={currentView.toUpperCase().replace('-', ' & ')} filter={`${currentView}_wear`} />;
+        return <ProductsSection title="WOMEN'S COLLECTION" filter="womens_wear" />;
+      case 'search':
+        return <SearchResults searchQuery="search query" />;
       case 'brands':
         return <div className="py-8"><div className="max-w-7xl mx-auto px-4 text-center"><h2 className="text-2xl font-bold">Brand Directory Coming Soon</h2><p className="text-gray-600 mt-2">Explore our premium brand partners</p></div></div>;
       case 'sale':
