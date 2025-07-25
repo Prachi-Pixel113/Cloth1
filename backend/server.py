@@ -1317,6 +1317,17 @@ async def initialize_sample_data():
     
     return {"message": f"Initialized {len(sample_brands)} brands and {len(sample_products)} products"}
 
+@api_router.post("/refresh-data")
+async def refresh_sample_data():
+    """Force refresh sample data - delete all and reinitialize"""
+    # Clear existing data
+    await db.products.delete_many({})
+    await db.brands.delete_many({})
+    await db.reviews.delete_many({})
+    
+    # Reinitialize data
+    return await initialize_sample_data()
+
 # Include the router in the main app
 app.include_router(api_router)
 
