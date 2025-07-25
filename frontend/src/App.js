@@ -1636,6 +1636,629 @@ const SearchResults = ({ searchQuery }) => {
     </div>
   );
 };
+
+// Enhanced Sales Section Component
+const SalesSection = () => {
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  
+  // Filter states
+  const [filters, setFilters] = useState({
+    category: '',
+    brand: '',
+    minPrice: '',
+    maxPrice: '',
+    minDiscount: '',
+    sizes: [],
+    sortBy: 'discount_high'
+  });
+
+  // Fetch sale products
+  useEffect(() => {
+    fetchSaleProducts();
+  }, []);
+
+  // Apply filters when filters or products change
+  useEffect(() => {
+    applyFilters();
+  }, [filters, products]);
+
+  const fetchSaleProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API}/products/sale?limit=50`);
+      setProducts(response.data);
+    } catch (error) {
+      console.error('Error fetching sale products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const applyFilters = () => {
+    let filtered = [...products];
+
+    // Category filter
+    if (filters.category) {
+      filtered = filtered.filter(p => p.category === filters.category);
+    }
+
+    // Price range filter
+    if (filters.minPrice) {
+      filtered = filtered.filter(p => p.price >= parseFloat(filters.minPrice));
+    }
+    if (filters.maxPrice) {
+      filtered = filtered.filter(p => p.price <= parseFloat(filters.maxPrice));
+    }
+
+    // Minimum discount filter
+    if (filters.minDiscount) {
+      filtered = filtered.filter(p => p.discount_percentage >= parseFloat(filters.minDiscount));
+    }
+
+    // Size filter
+    if (filters.sizes.length > 0) {
+      filtered = filtered.filter(p => 
+        p.sizes.some(size => filters.sizes.includes(size))
+      );
+    }
+
+    // Brand filter
+    if (filters.brand) {
+      filtered = filtered.filter(p => p.brand_name === filters.brand);
+    }
+
+    // Sort products
+    switch (filters.sortBy) {
+      case 'price_low':
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case 'price_high':
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case 'popularity':
+        filtered.sort((a, b) => b.view_count - a.view_count);
+        break;
+      case 'rating':
+        filtered.sort((a, b) => b.average_rating - a.average_rating);
+        break;
+      case 'newest':
+        filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        break;
+      case 'discount_low':
+        filtered.sort((a, b) => a.discount_percentage - b.discount_percentage);
+        break;
+      case 'discount_high':
+      default:
+        filtered.sort((a, b) => b.discount_percentage - a.discount_percentage);
+    }
+
+    setFilteredProducts(filtered);
+  };
+
+  const handleFilterChange = (filterType, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
+  const handleSizeToggle = (size) => {
+    setFilters(prev => ({
+      ...prev,
+      sizes: prev.sizes.includes(size) 
+        ? prev.sizes.filter(s => s !== size)
+        : [...prev.sizes, size]
+    }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      category: '',
+      brand: '',
+      minPrice: '',
+      maxPrice: '',
+      minDiscount: '',
+      sizes: [],
+      sortBy: 'discount_high'
+    });
+  };
+
+  const getProductBadge = (product) => {
+    if (product.discount_percentage >= 50) return { text: 'MEGA DEAL', color: 'bg-red-600' };
+    if (product.discount_percentage >= 30) return { text: 'HOT SALE', color: 'bg-orange-600' };
+    if (product.discount_percentage >= 20) return { text: 'SALE', color: 'bg-pink-600' };
+    if (product.featured) return { text: 'BESTSELLER', color: 'bg-purple-600' };
+    return { text: `${product.discount_percentage}% OFF`, color: 'bg-green-600' };
+  };
+
+  const ProductCard = ({ product }) => {
+    const { addToCart } = useCart();
+    const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
+    const [selectedColor, setSelectedColor] = useState(product.colors[0]);
+    const [isHovered, setIsHovered] = useState(false);
+
+    const handleAddToCart = (e) => {
+      e.stopPropagation();
+      addToCart(product.id, selectedSize, selectedColor, 1);
+      alert('Added to bag!');
+    };
+
+    const discountPrice = product.discount_percentage 
+      ? (product.price * (100 - product.discount_percentage) / 100).toFixed(2)
+      : product.price.toFixed(2);
+
+    const badge = getProductBadge(product);
+
+    return (
+      <div 
+        className="bg-white cursor-pointer group relative overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 rounded-lg"
+        onClick={() => setSelectedProduct(product)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {/* Product Image */}
+        <div className="relative overflow-hidden rounded-t-lg">
+          <img 
+            src={product.images[0]} 
+            alt={product.name}
+            className="w-full aspect-[3/4] object-cover group-hover:scale-110 transition-transform duration-500"
+          />
+          
+          {/* Badge */}
+          <div className="absolute top-3 left-3">
+            <span className={`${badge.color} text-white px-2 py-1 text-xs font-bold tracking-wide rounded-full animate-pulse`}>
+              {badge.text}
+            </span>
+          </div>
+
+          {/* Discount Percentage Badge */}
+          <div className="absolute top-3 right-3">
+            <span className="bg-red-600 text-white px-2 py-1 text-xs font-bold rounded-full">
+              -{product.discount_percentage}%
+            </span>
+          </div>
+
+          {/* Wishlist */}
+          <div className="absolute top-12 right-3">
+            <button className="bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-all">
+              <svg className="w-4 h-4 text-gray-600 hover:text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </button>
+          </div>
+          
+          {/* Quick Actions on Hover */}
+          {isHovered && (
+            <div className="absolute inset-0 bg-black/20 flex items-end justify-center pb-4 transition-opacity duration-300">
+              <div className="flex space-x-2">
+                <button 
+                  onClick={handleAddToCart}
+                  className="bg-red-600 text-white px-4 py-2 text-sm font-bold hover:bg-red-700 transition-colors rounded shadow-lg"
+                >
+                  ADD TO BAG
+                </button>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedProduct(product);
+                  }}
+                  className="bg-white/90 text-gray-800 px-4 py-2 text-sm font-bold hover:bg-gray-100 transition-colors rounded shadow-lg"
+                >
+                  QUICK VIEW
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+        
+        {/* Product Info */}
+        <div className="p-4">
+          <h3 className="font-bold text-gray-800 text-sm mb-1 line-clamp-1">{product.brand_name}</h3>
+          <p className="text-xs text-gray-500 mb-2 line-clamp-1">{product.name}</p>
+          
+          <div className="flex items-center space-x-2 mb-2">
+            <span className="font-bold text-red-600 text-lg">₹{discountPrice}</span>
+            <span className="text-sm text-gray-400 line-through">₹{product.price.toFixed(2)}</span>
+            <span className="text-sm text-green-600 font-bold">({product.discount_percentage}% OFF)</span>
+          </div>
+          
+          {/* Rating */}
+          <div className="flex items-center space-x-1">
+            <div className="flex items-center bg-green-600 text-white px-1 py-0.5 rounded text-xs">
+              <span>{product.average_rating}</span>
+              <svg className="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            </div>
+            <span className="text-xs text-gray-500">({product.review_count})</span>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const FilterSidebar = ({ isMobile = false }) => {
+    const categories = [
+      { value: '', label: 'All Categories' },
+      { value: 'mens_shirts', label: "Men's Shirts" },
+      { value: 'mens_tshirts', label: "Men's T-Shirts" },
+      { value: 'mens_pants', label: "Men's Pants" },
+      { value: 'mens_jeans', label: "Men's Jeans" },
+      { value: 'mens_formal', label: "Men's Formal" },
+      { value: 'mens_casual', label: "Men's Casual" },
+      { value: 'mens_sportswear', label: "Men's Sportswear" },
+      { value: 'womens_dresses', label: "Women's Dresses" },
+      { value: 'womens_tops', label: "Women's Tops" },
+      { value: 'womens_blouses', label: "Women's Blouses" },
+      { value: 'womens_skirts', label: "Women's Skirts" },
+      { value: 'womens_jeans', label: "Women's Jeans" },
+      { value: 'womens_formal', label: "Women's Formal" },
+      { value: 'womens_casual', label: "Women's Casual" },
+      { value: 'womens_sportswear', label: "Women's Sportswear" }
+    ];
+
+    const brands = ['', ...new Set(products.map(p => p.brand_name))];
+    const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+
+    return (
+      <div className={`${isMobile ? 'p-4' : 'sticky top-24'}`}>
+        <div className="space-y-6">
+          {/* Clear Filters */}
+          <div className="flex justify-between items-center">
+            <h3 className="font-bold text-lg text-gray-800">Filters</h3>
+            <button 
+              onClick={clearFilters}
+              className="text-red-600 text-sm font-medium hover:text-red-800"
+            >
+              Clear All
+            </button>
+          </div>
+
+          {/* Category Filter */}
+          <div>
+            <h4 className="font-semibold text-gray-800 mb-3">Category</h4>
+            <select
+              value={filters.category}
+              onChange={(e) => handleFilterChange('category', e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            >
+              {categories.map(cat => (
+                <option key={cat.value} value={cat.value}>{cat.label}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Brand Filter */}
+          <div>
+            <h4 className="font-semibold text-gray-800 mb-3">Brand</h4>
+            <select
+              value={filters.brand}
+              onChange={(e) => handleFilterChange('brand', e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            >
+              <option value="">All Brands</option>
+              {brands.slice(1).map(brand => (
+                <option key={brand} value={brand}>{brand}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Size Filter */}
+          <div>
+            <h4 className="font-semibold text-gray-800 mb-3">Size</h4>
+            <div className="flex flex-wrap gap-2">
+              {sizes.map(size => (
+                <button
+                  key={size}
+                  onClick={() => handleSizeToggle(size)}
+                  className={`w-12 h-12 border-2 font-medium text-sm rounded transition-colors ${
+                    filters.sizes.includes(size)
+                      ? 'border-red-600 bg-red-600 text-white'
+                      : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Price Range */}
+          <div>
+            <h4 className="font-semibold text-gray-800 mb-3">Price Range</h4>
+            <div className="flex space-x-2">
+              <input
+                type="number"
+                placeholder="Min"
+                value={filters.minPrice}
+                onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              />
+              <input
+                type="number"
+                placeholder="Max"
+                value={filters.maxPrice}
+                onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              />
+            </div>
+          </div>
+
+          {/* Minimum Discount */}
+          <div>
+            <h4 className="font-semibold text-gray-800 mb-3">Minimum Discount</h4>
+            <div className="space-y-2">
+              {[10, 20, 30, 40, 50].map(discount => (
+                <label key={discount} className="flex items-center">
+                  <input
+                    type="radio"
+                    name="minDiscount"
+                    value={discount}
+                    checked={filters.minDiscount === discount.toString()}
+                    onChange={(e) => handleFilterChange('minDiscount', e.target.value)}
+                    className="mr-2"
+                  />
+                  <span className="text-sm">{discount}% and above</span>
+                </label>
+              ))}
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="minDiscount"
+                  value=""
+                  checked={filters.minDiscount === ''}
+                  onChange={(e) => handleFilterChange('minDiscount', e.target.value)}
+                  className="mr-2"
+                />
+                <span className="text-sm">All Discounts</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading amazing deals...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Banner */}
+      <div className="relative bg-gradient-to-r from-red-900 via-red-700 to-pink-700 text-white">
+        <div className="absolute inset-0">
+          <img 
+            src="https://images.unsplash.com/photo-1483985988355-763728e1935b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDN8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwc2FsZXxlbnwwfHx8fDE3NTM0MjU2ODR8MA&ixlib=rb-4.1.0&q=85" 
+            alt="Sale Fashion"
+            className="w-full h-full object-cover opacity-60"
+          />
+        </div>
+        <div className="relative max-w-7xl mx-auto px-4 py-24 lg:py-32">
+          <div className="max-w-3xl">
+            <div className="mb-6">
+              <span className="inline-block bg-gradient-to-r from-yellow-400 to-red-500 text-white px-6 py-3 text-lg font-bold uppercase tracking-wide rounded-full shadow-lg animate-bounce">
+                🔥 MEGA SALE ALERT 🔥
+              </span>
+            </div>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+              UNBEATABLE DEALS
+            </h1>
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-yellow-400 mb-4 drop-shadow-lg">
+              UP TO 70% OFF
+            </h2>
+            <p className="text-xl md:text-2xl mb-10 opacity-90 leading-relaxed">
+              Exclusive discounts on premium fashion for men & women. Limited time offers you can't miss!
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button className="bg-gradient-to-r from-yellow-500 to-red-600 hover:from-yellow-600 hover:to-red-700 text-white px-10 py-4 font-bold text-lg uppercase tracking-wide transition-all duration-300 transform hover:scale-105 hover:shadow-2xl rounded-full">
+                SHOP NOW
+              </button>
+              <button className="border-2 border-white text-white hover:bg-white hover:text-red-700 px-10 py-4 font-bold text-lg uppercase tracking-wide transition-all duration-300 rounded-full backdrop-blur-sm">
+                VIEW ALL DEALS
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Promotional Strip */}
+      <div className="bg-gradient-to-r from-red-600 via-pink-600 to-red-600 text-white py-3">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-center space-x-12 text-sm font-medium animate-pulse">
+            <div className="flex items-center space-x-2">
+              <span className="text-yellow-300">⚡</span>
+              <span className="uppercase tracking-wide">FLASH SALE: EXTRA 20% OFF</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-yellow-300">🚚</span>
+              <span className="uppercase tracking-wide">FREE SHIPPING ON ALL ORDERS</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-yellow-300">💯</span>
+              <span className="uppercase tracking-wide">EASY RETURNS & EXCHANGES</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Sale Items</h1>
+            <p className="text-gray-600">Discover amazing deals across all categories</p>
+          </div>
+          
+          {/* Sort Dropdown */}
+          <div className="flex items-center space-x-4">
+            <span className="text-sm text-gray-600">Sort by:</span>
+            <select
+              value={filters.sortBy}
+              onChange={(e) => handleFilterChange('sortBy', e.target.value)}
+              className="border border-gray-300 rounded-lg px-4 py-2 text-sm bg-white"
+            >
+              <option value="discount_high">Highest Discount</option>
+              <option value="discount_low">Lowest Discount</option>
+              <option value="price_low">Price: Low to High</option>
+              <option value="price_high">Price: High to Low</option>
+              <option value="popularity">Most Popular</option>
+              <option value="rating">Customer Rating</option>
+              <option value="newest">Newest First</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="lg:flex lg:space-x-8">
+          {/* Desktop Filters */}
+          <div className="hidden lg:block lg:w-1/4">
+            <FilterSidebar />
+          </div>
+
+          {/* Mobile Filter Button */}
+          <div className="lg:hidden mb-4">
+            <button
+              onClick={() => setIsMobileFiltersOpen(true)}
+              className="flex items-center space-x-2 bg-red-600 text-white px-4 py-2 rounded-lg font-medium"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
+              </svg>
+              <span>Filters</span>
+            </button>
+          </div>
+
+          {/* Products Grid */}
+          <div className="lg:w-3/4">
+            {filteredProducts.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {filteredProducts.map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <h2 className="text-xl font-bold text-gray-800 mb-2">No sale items found</h2>
+                <p className="text-gray-600">Try adjusting your filters to see more deals</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Filter Modal */}
+      {isMobileFiltersOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div className="fixed inset-0 bg-black/50" onClick={() => setIsMobileFiltersOpen(false)}></div>
+          <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl overflow-y-auto">
+            <div className="p-4 border-b">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-bold">Filters</h3>
+                <button onClick={() => setIsMobileFiltersOpen(false)}>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <FilterSidebar isMobile={true} />
+          </div>
+        </div>
+      )}
+
+      {/* Product Detail Modal */}
+      {selectedProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black/50" onClick={() => setSelectedProduct(null)}></div>
+          <div className="relative bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <button 
+              onClick={() => setSelectedProduct(null)}
+              className="absolute top-4 right-4 z-10 bg-white rounded-full p-2 shadow-lg"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            <div className="grid md:grid-cols-2 gap-8 p-6">
+              <div>
+                <img 
+                  src={selectedProduct.images[0]} 
+                  alt={selectedProduct.name}
+                  className="w-full aspect-square object-cover rounded-lg"
+                />
+              </div>
+              <div>
+                <div className="mb-4">
+                  <span className={`${getProductBadge(selectedProduct).color} text-white px-3 py-1 text-sm font-bold rounded-full`}>
+                    {getProductBadge(selectedProduct).text}
+                  </span>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">{selectedProduct.name}</h2>
+                <p className="text-gray-600 mb-4">{selectedProduct.description}</p>
+                
+                <div className="flex items-center space-x-4 mb-6">
+                  <span className="text-3xl font-bold text-red-600">
+                    ₹{(selectedProduct.price * (100 - selectedProduct.discount_percentage) / 100).toFixed(2)}
+                  </span>
+                  <span className="text-xl text-gray-400 line-through">₹{selectedProduct.price.toFixed(2)}</span>
+                  <span className="text-lg text-green-600 font-bold">({selectedProduct.discount_percentage}% OFF)</span>
+                </div>
+
+                <div className="space-y-4 mb-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Size</label>
+                    <div className="flex space-x-2">
+                      {selectedProduct.sizes.map(size => (
+                        <button key={size} className="border border-gray-300 px-3 py-1 text-sm rounded hover:border-red-600">
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Color</label>
+                    <div className="flex space-x-2">
+                      {selectedProduct.colors.map(color => (
+                        <button key={color} className="border border-gray-300 px-3 py-1 text-sm rounded hover:border-red-600">
+                          {color}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex space-x-4">
+                  <button className="flex-1 bg-red-600 text-white py-3 font-bold text-lg rounded-lg hover:bg-red-700 transition-colors">
+                    ADD TO BAG
+                  </button>
+                  <button className="border-2 border-red-600 text-red-600 px-6 py-3 font-bold rounded-lg hover:bg-red-600 hover:text-white transition-colors">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
 const DealsSection = () => {
   const deals = [
     { discount: "40-70% OFF", category: "Men's Formal Shirts", subcategory: "Office & Business Wear", image: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
