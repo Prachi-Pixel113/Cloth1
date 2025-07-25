@@ -1869,6 +1869,15 @@ class StyleHubEnhancedAPITester:
             ("Get Product Reviews", self.test_get_product_reviews),
             ("Mark Review Helpful", self.test_mark_review_helpful),
             
+            # Wishlist functionality tests (HIGH PRIORITY - NEWLY IMPLEMENTED)
+            ("Add to Wishlist", self.test_add_to_wishlist),
+            ("Get Wishlist Items", self.test_get_wishlist),
+            ("Get Wishlist Count", self.test_get_wishlist_count),
+            ("Remove from Wishlist", self.test_remove_from_wishlist),
+            ("Clear Wishlist", self.test_clear_wishlist),
+            ("Wishlist Duplicate Prevention", self.test_wishlist_duplicate_prevention),
+            ("Wishlist Non-existent Product", self.test_wishlist_nonexistent_product),
+            
             # Basic ecommerce workflow
             ("Category Filtering", self.test_get_products_by_category),
             ("Featured Products", self.test_get_featured_products),
