@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Add a stylish, responsive Men's Section for an eCommerce website. Include a hero banner with a model, filters (size, brand, price), product cards with name, price, image, add-to-cart button. Use modern fonts and bold colors. Ensure mobile responsiveness and clean grid layout. Include a sort dropdown (by price/popularity/new), add badges like 'New' or 'Best Seller', hover effects for product cards, collapsible sidebar filters on mobile."
+user_problem_statement: "Add a stylish, responsive Men's Section for an eCommerce website. Include a hero banner with a model, filters (size, brand, price), product cards with name, price, image, add-to-cart button. Use modern fonts and bold colors. Ensure mobile responsiveness and clean grid layout. Include a sort dropdown (by price/popularity/new), add badges like 'New' or 'Best Seller', hover effects for product cards, collapsible sidebar filters on mobile. CONTINUATION: In all collection wishlist icon to connect with wishlist section so that when we add wishlist icon or click on it, the collection adds in wishlist section."
 
 backend:
   - task: "Enhanced Men's Categories"
