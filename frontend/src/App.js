@@ -188,6 +188,7 @@ const useWishlist = () => {
 // Myntra-style Header
 const Header = ({ currentView, setCurrentView }) => {
   const { cartTotal } = useCart();
+  const { wishlistTotal } = useWishlist();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchSuggestions, setSearchSuggestions] = useState([]);
