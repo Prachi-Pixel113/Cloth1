@@ -3162,7 +3162,7 @@ const App = () => {
       case 'brands':
         return <div className="py-8"><div className="max-w-7xl mx-auto px-4 text-center"><h2 className="text-2xl font-bold">Brand Directory Coming Soon</h2><p className="text-gray-600 mt-2">Explore our premium brand partners</p></div></div>;
       case 'sale':
-        return <div className="py-8"><div className="max-w-7xl mx-auto px-4 text-center"><h2 className="text-2xl font-bold">Sale Items</h2><p className="text-gray-600 mt-2">Best deals and discounts</p></div></div>;
+        return <SalesSection />;
       default:
         return <Homepage setCurrentView={setCurrentView} />;
     }
