@@ -531,6 +531,495 @@ const CategorySection = ({ title, categories }) => {
   );
 };
 
+// Enhanced Men's Section Component
+const MensSection = () => {
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  
+  // Filter states
+  const [filters, setFilters] = useState({
+    category: '',
+    brand: '',
+    minPrice: '',
+    maxPrice: '',
+    sizes: [],
+    sortBy: 'featured'
+  });
+
+  // Fetch men's products
+  useEffect(() => {
+    fetchMensProducts();
+  }, []);
+
+  // Apply filters when filters or products change
+  useEffect(() => {
+    applyFilters();
+  }, [filters, products]);
+
+  const fetchMensProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API}/products/men?limit=50`);
+      setProducts(response.data);
+    } catch (error) {
+      console.error('Error fetching men\'s products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const applyFilters = () => {
+    let filtered = [...products];
+
+    // Category filter
+    if (filters.category) {
+      filtered = filtered.filter(p => p.category === filters.category);
+    }
+
+    // Price range filter
+    if (filters.minPrice) {
+      filtered = filtered.filter(p => p.price >= parseFloat(filters.minPrice));
+    }
+    if (filters.maxPrice) {
+      filtered = filtered.filter(p => p.price <= parseFloat(filters.maxPrice));
+    }
+
+    // Size filter
+    if (filters.sizes.length > 0) {
+      filtered = filtered.filter(p => 
+        p.sizes.some(size => filters.sizes.includes(size))
+      );
+    }
+
+    // Brand filter
+    if (filters.brand) {
+      filtered = filtered.filter(p => p.brand_name === filters.brand);
+    }
+
+    // Sort products
+    switch (filters.sortBy) {
+      case 'price_low':
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case 'price_high':
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case 'popularity':
+        filtered.sort((a, b) => b.view_count - a.view_count);
+        break;
+      case 'newest':
+        filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        break;
+      case 'rating':
+        filtered.sort((a, b) => b.average_rating - a.average_rating);
+        break;
+      default: // featured
+        filtered.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+    }
+
+    setFilteredProducts(filtered);
+  };
+
+  const handleFilterChange = (filterType, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
+  const handleSizeToggle = (size) => {
+    setFilters(prev => ({
+      ...prev,
+      sizes: prev.sizes.includes(size) 
+        ? prev.sizes.filter(s => s !== size)
+        : [...prev.sizes, size]
+    }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      category: '',
+      brand: '',
+      minPrice: '',
+      maxPrice: '',
+      sizes: [],
+      sortBy: 'featured'
+    });
+  };
+
+  const getProductBadge = (product) => {
+    if (product.featured) return { text: 'BESTSELLER', color: 'bg-pink-600' };
+    if (product.discount_percentage > 25) return { text: 'HOT DEAL', color: 'bg-red-600' };
+    if (new Date(product.created_at) > new Date(Date.now() - 30*24*60*60*1000)) {
+      return { text: 'NEW', color: 'bg-green-600' };
+    }
+    return null;
+  };
+
+  const ProductCard = ({ product }) => {
+    const { addToCart } = useCart();
+    const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
+    const [selectedColor, setSelectedColor] = useState(product.colors[0]);
+    const [isHovered, setIsHovered] = useState(false);
+
+    const handleAddToCart = (e) => {
+      e.stopPropagation();
+      addToCart(product.id, selectedSize, selectedColor, 1);
+      alert('Added to bag!');
+    };
+
+    const discountPrice = product.discount_percentage 
+      ? (product.price * (100 - product.discount_percentage) / 100).toFixed(2)
+      : product.price.toFixed(2);
+
+    const badge = getProductBadge(product);
+
+    return (
+      <div 
+        className="bg-white cursor-pointer group relative overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+        onClick={() => setSelectedProduct(product)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {/* Product Image */}
+        <div className="relative overflow-hidden">
+          <img 
+            src={product.images[0]} 
+            alt={product.name}
+            className="w-full aspect-[3/4] object-cover group-hover:scale-110 transition-transform duration-500"
+          />
+          
+          {/* Badge */}
+          {badge && (
+            <div className="absolute top-3 left-3">
+              <span className={`${badge.color} text-white px-2 py-1 text-xs font-bold tracking-wide`}>
+                {badge.text}
+              </span>
+            </div>
+          )}
+
+          {/* Wishlist */}
+          <div className="absolute top-3 right-3">
+            <button className="bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-all">
+              <svg className="w-4 h-4 text-gray-600 hover:text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </button>
+          </div>
+          
+          {/* Quick Actions on Hover */}
+          {isHovered && (
+            <div className="absolute inset-0 bg-black/20 flex items-end justify-center pb-4 transition-opacity duration-300">
+              <div className="flex space-x-2">
+                <button 
+                  onClick={handleAddToCart}
+                  className="bg-white text-gray-800 px-4 py-2 text-sm font-bold hover:bg-pink-600 hover:text-white transition-colors rounded"
+                >
+                  ADD TO BAG
+                </button>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedProduct(product);
+                  }}
+                  className="bg-white/90 text-gray-800 px-4 py-2 text-sm font-bold hover:bg-gray-100 transition-colors rounded"
+                >
+                  QUICK VIEW
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+        
+        {/* Product Info */}
+        <div className="p-4">
+          <h3 className="font-bold text-gray-800 text-sm mb-1 line-clamp-1">{product.brand_name}</h3>
+          <p className="text-xs text-gray-500 mb-2 line-clamp-1">{product.name}</p>
+          
+          <div className="flex items-center space-x-2 mb-2">
+            <span className="font-bold text-gray-800">₹{discountPrice}</span>
+            {product.discount_percentage > 0 && (
+              <>
+                <span className="text-xs text-gray-400 line-through">₹{product.price.toFixed(2)}</span>
+                <span className="text-xs text-orange-600 font-medium">({product.discount_percentage}% OFF)</span>
+              </>
+            )}
+          </div>
+          
+          {/* Rating */}
+          <div className="flex items-center space-x-1">
+            <div className="flex items-center bg-green-600 text-white px-1 py-0.5 rounded text-xs">
+              <span>{product.average_rating}</span>
+              <svg className="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            </div>
+            <span className="text-xs text-gray-500">({product.review_count})</span>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const FilterSidebar = ({ isMobile = false }) => {
+    const categories = [
+      { value: '', label: 'All Categories' },
+      { value: 'mens_shirts', label: 'Shirts' },
+      { value: 'mens_tshirts', label: 'T-Shirts' },
+      { value: 'mens_pants', label: 'Pants' },
+      { value: 'mens_jeans', label: 'Jeans' },
+      { value: 'mens_blazers', label: 'Blazers' },
+      { value: 'mens_casual', label: 'Casual Wear' },
+      { value: 'mens_formal', label: 'Formal Wear' },
+      { value: 'mens_sportswear', label: 'Sportswear' }
+    ];
+
+    const brands = ['', ...new Set(products.map(p => p.brand_name))];
+    const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
+
+    return (
+      <div className={`${isMobile ? 'p-4' : 'sticky top-24'}`}>
+        <div className="space-y-6">
+          {/* Clear Filters */}
+          <div className="flex justify-between items-center">
+            <h3 className="font-bold text-lg text-gray-800">Filters</h3>
+            <button 
+              onClick={clearFilters}
+              className="text-pink-600 text-sm font-medium hover:text-pink-800"
+            >
+              Clear All
+            </button>
+          </div>
+
+          {/* Category Filter */}
+          <div>
+            <h4 className="font-semibold text-gray-800 mb-3">Category</h4>
+            <select
+              value={filters.category}
+              onChange={(e) => handleFilterChange('category', e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            >
+              {categories.map(cat => (
+                <option key={cat.value} value={cat.value}>{cat.label}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Brand Filter */}
+          <div>
+            <h4 className="font-semibold text-gray-800 mb-3">Brand</h4>
+            <select
+              value={filters.brand}
+              onChange={(e) => handleFilterChange('brand', e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            >
+              <option value="">All Brands</option>
+              {brands.slice(1).map(brand => (
+                <option key={brand} value={brand}>{brand}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Size Filter */}
+          <div>
+            <h4 className="font-semibold text-gray-800 mb-3">Size</h4>
+            <div className="flex flex-wrap gap-2">
+              {sizes.map(size => (
+                <button
+                  key={size}
+                  onClick={() => handleSizeToggle(size)}
+                  className={`w-12 h-12 border-2 font-medium text-sm rounded transition-colors ${
+                    filters.sizes.includes(size)
+                      ? 'border-pink-600 bg-pink-600 text-white'
+                      : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Price Range */}
+          <div>
+            <h4 className="font-semibold text-gray-800 mb-3">Price Range</h4>
+            <div className="flex space-x-2">
+              <input
+                type="number"
+                placeholder="Min"
+                value={filters.minPrice}
+                onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              />
+              <input
+                type="number"
+                placeholder="Max"
+                value={filters.maxPrice}
+                onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading men's collection...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Banner */}
+      <div className="relative bg-gradient-to-r from-gray-900 to-gray-700 text-white">
+        <div className="absolute inset-0">
+          <img 
+            src="https://images.unsplash.com/photo-1688641771826-2ab23ccd89c5?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NjZ8MHwxfHNlYXJjaHwxfHxtZW4lMjdzJTIwZmFzaGlvbiUyMG1vZGVsfGVufDB8fHx8MTc1MzQxNzc3NHww&ixlib=rb-4.1.0&q=85" 
+            alt="Men's Fashion"
+            className="w-full h-full object-cover opacity-60"
+          />
+        </div>
+        <div className="relative max-w-7xl mx-auto px-4 py-24 lg:py-32">
+          <div className="max-w-3xl">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+              MEN'S FASHION
+            </h1>
+            <h2 className="text-2xl md:text-3xl font-bold text-yellow-400 mb-4">
+              STYLE REDEFINED
+            </h2>
+            <p className="text-xl mb-8 opacity-90">
+              Discover premium menswear that combines comfort, style, and sophistication
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button className="bg-pink-600 hover:bg-pink-700 text-white px-8 py-4 font-bold text-lg transition-colors rounded-lg">
+                SHOP NOW
+              </button>
+              <button className="border-2 border-white text-white hover:bg-white hover:text-gray-900 px-8 py-4 font-bold text-lg transition-colors rounded-lg">
+                VIEW LOOKBOOK
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Header with Sort and Mobile Filter Toggle */}
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800">Men's Collection</h2>
+            <p className="text-gray-600">{filteredProducts.length} products found</p>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            {/* Sort Dropdown */}
+            <select
+              value={filters.sortBy}
+              onChange={(e) => handleFilterChange('sortBy', e.target.value)}
+              className="border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium"
+            >
+              <option value="featured">Featured</option>
+              <option value="popularity">Most Popular</option>
+              <option value="newest">Newest First</option>
+              <option value="price_low">Price: Low to High</option>
+              <option value="price_high">Price: High to Low</option>
+              <option value="rating">Customer Rating</option>
+            </select>
+
+            {/* Mobile Filter Button */}
+            <button
+              onClick={() => setIsMobileFiltersOpen(true)}
+              className="lg:hidden bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z" />
+              </svg>
+              <span>Filters</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="flex gap-8">
+          {/* Desktop Sidebar */}
+          <div className="hidden lg:block w-64 flex-shrink-0">
+            <FilterSidebar />
+          </div>
+
+          {/* Products Grid */}
+          <div className="flex-1">
+            {filteredProducts.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {filteredProducts.map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <svg className="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">No products found</h3>
+                <p className="text-gray-600 mb-4">Try adjusting your filters to find what you're looking for</p>
+                <button 
+                  onClick={clearFilters}
+                  className="bg-pink-600 text-white px-6 py-2 font-bold text-sm hover:bg-pink-700 transition-colors rounded-lg"
+                >
+                  Clear Filters
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Filter Modal */}
+      {isMobileFiltersOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden">
+          <div className="absolute right-0 top-0 h-full w-80 bg-white overflow-y-auto">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="font-bold text-lg">Filters</h3>
+              <button 
+                onClick={() => setIsMobileFiltersOpen(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            <FilterSidebar isMobile={true} />
+            <div className="p-4 border-t">
+              <button 
+                onClick={() => setIsMobileFiltersOpen(false)}
+                className="w-full bg-pink-600 text-white py-3 font-bold text-sm hover:bg-pink-700 transition-colors rounded-lg"
+              >
+                APPLY FILTERS
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Product Modal */}
+      {selectedProduct && (
+        <ProductModal 
+          product={selectedProduct} 
+          onClose={() => setSelectedProduct(null)} 
+        />
+      )}
+    </div>
+  );
+};
+
 // Enhanced Search Results Component
 const SearchResults = ({ searchQuery }) => {
   const [searchResults, setSearchResults] = useState([]);
