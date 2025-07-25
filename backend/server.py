@@ -982,6 +982,12 @@ async def add_to_wishlist(wishlist_item: WishlistItemCreate):
     await db.wishlist_items.insert_one(wishlist_item_obj.dict())
     return wishlist_item_obj
 
+@api_router.delete("/wishlist/clear/{session_id}")
+async def clear_wishlist(session_id: str):
+    """Clear entire wishlist for a session"""
+    await db.wishlist_items.delete_many({"session_id": session_id})
+    return {"message": "Wishlist cleared"}
+
 @api_router.delete("/wishlist/{session_id}/{product_id}")
 async def remove_from_wishlist(session_id: str, product_id: str):
     """Remove product from wishlist"""
@@ -994,12 +1000,6 @@ async def remove_from_wishlist(session_id: str, product_id: str):
         raise HTTPException(status_code=404, detail="Item not found in wishlist")
     
     return {"message": "Item removed from wishlist"}
-
-@api_router.delete("/wishlist/clear/{session_id}")
-async def clear_wishlist(session_id: str):
-    """Clear entire wishlist for a session"""
-    await db.wishlist_items.delete_many({"session_id": session_id})
-    return {"message": "Wishlist cleared"}
 
 @api_router.get("/wishlist/count/{session_id}")
 async def get_wishlist_count(session_id: str):
