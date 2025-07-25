@@ -458,34 +458,48 @@ const CategorySection = ({ title, categories }) => {
   );
 };
 
-// Enhanced Deals Section with more categories
+// Enhanced Deals Section focused on Men's and Women's fashion
 const DealsSection = () => {
   const deals = [
-    { discount: "40-70% OFF", category: "Shirts & T-Shirts", subcategory: "Men's Topwear", image: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
-    { discount: "50-80% OFF", category: "Dresses & Kurtas", subcategory: "Women's Wear", image: "https://images.unsplash.com/photo-1568252542512-9fe8fe9c87bb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwyfHxmYXNoaW9uJTIwbW9kZWx8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" },
-    { discount: "30-60% OFF", category: "Track Pants & Joggers", subcategory: "Sportswear", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwzfHxmYXNoaW9uJTIwbW9kZWl8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" },
-    { discount: "25-50% OFF", category: "Jeans & Trousers", subcategory: "Bottomwear", image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwyfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
-    { discount: "35-65% OFF", category: "Ethnic Wear", subcategory: "Festive Collection", image: "https://images.unsplash.com/photo-1562572159-4efc207f5aff?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwbW9kZWx8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" },
-    { discount: "20-40% OFF", category: "Footwear", subcategory: "Shoes & Sandals", image: "https://images.unsplash.com/photo-1445205170230-053b83016050?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwzfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
-    { discount: "15-30% OFF", category: "Accessories", subcategory: "Bags & Watches", image: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
-    { discount: "10-25% OFF", category: "Beauty & Personal Care", subcategory: "Skincare & Makeup", image: "https://images.unsplash.com/photo-1568252542512-9fe8fe9c87bb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwyfHxmYXNoaW9uJTIwbW9kZWx8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" }
+    { discount: "40-70% OFF", category: "Men's Formal Shirts", subcategory: "Office & Business Wear", image: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
+    { discount: "50-80% OFF", category: "Women's Ethnic Wear", subcategory: "Kurtas & Sarees", image: "https://images.unsplash.com/photo-1568252542512-9fe8fe9c87bb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwyfHxmYXNoaW9uJTIwbW9kZWx8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" },
+    { discount: "30-60% OFF", category: "Men's Casual Wear", subcategory: "T-Shirts & Jeans", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwzfHxmYXNoaW9uJTIwbW9kZWl8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" },
+    { discount: "25-50% OFF", category: "Women's Western Wear", subcategory: "Dresses & Tops", image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwyfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
+    { discount: "35-65% OFF", category: "Men's Ethnic Collection", subcategory: "Kurtas & Sherwanis", image: "https://images.unsplash.com/photo-1562572159-4efc207f5aff?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwbW9kZWx8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" },
+    { discount: "20-40% OFF", category: "Premium Footwear", subcategory: "Men's & Women's", image: "https://images.unsplash.com/photo-1445205170230-053b83016050?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwzfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
+    { discount: "15-35% OFF", category: "Fashion Accessories", subcategory: "Bags & Watches", image: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwY2xvdGhpbmd8ZW58MHx8fHwxNzUzMTI1NzQxfDA&ixlib=rb-4.1.0&q=85" },
+    { discount: "45-75% OFF", category: "Winter Collection", subcategory: "Jackets & Sweaters", image: "https://images.unsplash.com/photo-1568252542512-9fe8fe9c87bb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwyfHxmYXNoaW9uJTIwbW9kZWx8ZW58MHx8fHwxNzUzMjQ2MTY0fDA&ixlib=rb-4.1.0&q=85" }
   ];
 
   return (
-    <div className="bg-yellow-50 py-8">
+    <div className="bg-gradient-to-br from-yellow-50 to-orange-50 py-12">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">DEALS OF THE DAY</h2>
-          <p className="text-gray-600">Limited Time Offers</p>
+        <div className="text-center mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">MEGA FASHION SALE</h2>
+          <p className="text-lg text-gray-600 mb-4">Limited Time Offers on Premium Fashion</p>
+          <div className="inline-flex items-center bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold animate-pulse">
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            ENDS SOON!
+          </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
           {deals.slice(0, 8).map((deal, index) => (
-            <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow">
-              <img src={deal.image} alt={deal.category} className="w-full h-32 md:h-40 object-cover" />
-              <div className="p-3 text-center">
-                <p className="font-bold text-pink-600 text-sm md:text-base">{deal.discount}</p>
-                <p className="text-xs md:text-sm text-gray-800 font-medium">{deal.category}</p>
+            <div key={index} className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+              <div className="relative">
+                <img src={deal.image} alt={deal.category} className="w-full h-40 md:h-48 object-cover" />
+                <div className="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
+                  {deal.discount}
+                </div>
+              </div>
+              <div className="p-4 text-center">
+                <p className="font-bold text-pink-600 text-base md:text-lg mb-1">{deal.discount}</p>
+                <p className="text-sm md:text-base text-gray-800 font-semibold mb-1">{deal.category}</p>
                 <p className="text-xs text-gray-500">{deal.subcategory}</p>
+                <button className="mt-3 w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white py-2 px-4 rounded-lg text-sm font-bold hover:from-pink-600 hover:to-purple-600 transition-all duration-300">
+                  SHOP NOW
+                </button>
               </div>
             </div>
           ))}
