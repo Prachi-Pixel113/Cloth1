@@ -3681,6 +3681,10 @@ const App = () => {
         return <div className="py-8"><div className="max-w-7xl mx-auto px-4 text-center"><h2 className="text-2xl font-bold">Brand Directory Coming Soon</h2><p className="text-gray-600 mt-2">Explore our premium brand partners</p></div></div>;
       case 'sale':
         return <SalesSection />;
+      case 'profile':
+        return <ProfileSection />;
+      case 'wishlist':
+        return <WishlistSection />;
       default:
         return <Homepage setCurrentView={setCurrentView} />;
     }
