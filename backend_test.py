@@ -1525,6 +1525,292 @@ class StyleHubEnhancedAPITester:
             self.log_test("Create Order", False, f"Request failed: {str(e)}")
             return False
 
+    # ========== WISHLIST FUNCTIONALITY TESTS ==========
+    def test_add_to_wishlist(self):
+        """Test POST /api/wishlist to add items to wishlist"""
+        print("🧪 Testing Add Items to Wishlist...")
+        
+        if not self.sample_products:
+            self.log_test("Add to Wishlist", False, "No sample products available for testing")
+            return False
+        
+        # Test adding multiple items to wishlist
+        test_items = []
+        for i in range(min(3, len(self.sample_products))):
+            test_items.append({
+                "session_id": SESSION_ID,
+                "product_id": self.sample_products[i]['id']
+            })
+        
+        for i, item in enumerate(test_items):
+            try:
+                response = self.session.post(f"{API_BASE}/wishlist", json=item)
+                
+                if response.status_code == 200:
+                    wishlist_item = response.json()
+                    required_fields = ['id', 'session_id', 'product_id', 'added_at']
+                    missing_fields = [field for field in required_fields if field not in wishlist_item]
+                    
+                    if not missing_fields:
+                        if wishlist_item.get('product_id') == item['product_id'] and wishlist_item.get('session_id') == item['session_id']:
+                            self.log_test(f"Add to Wishlist (Item {i+1})", True, f"Added product {item['product_id'][:8]}... to wishlist")
+                        else:
+                            self.log_test(f"Add to Wishlist (Item {i+1})", False, "Product ID or session ID mismatch in response")
+                            return False
+                    else:
+                        self.log_test(f"Add to Wishlist (Item {i+1})", False, f"Missing wishlist item fields: {missing_fields}")
+                        return False
+                else:
+                    self.log_test(f"Add to Wishlist (Item {i+1})", False, f"HTTP {response.status_code}: {response.text}")
+                    return False
+                    
+            except Exception as e:
+                self.log_test(f"Add to Wishlist (Item {i+1})", False, f"Request failed: {str(e)}")
+                return False
+        
+        return True
+
+    def test_get_wishlist(self):
+        """Test GET /api/wishlist/{session_id} to retrieve wishlist items with product details"""
+        print("🧪 Testing Get Wishlist Items...")
+        
+        try:
+            response = self.session.get(f"{API_BASE}/wishlist/{SESSION_ID}")
+            
+            if response.status_code == 200:
+                wishlist_items = response.json()
+                if isinstance(wishlist_items, list):
+                    if wishlist_items:
+                        # Verify wishlist item structure with product details
+                        first_item = wishlist_items[0]
+                        required_fields = ['wishlist_id', 'added_at', 'product']
+                        missing_fields = [field for field in required_fields if field not in first_item]
+                        
+                        if not missing_fields:
+                            # Verify product details are included
+                            product = first_item.get('product')
+                            if isinstance(product, dict):
+                                product_required_fields = ['id', 'name', 'description', 'price', 'category']
+                                product_missing_fields = [field for field in product_required_fields if field not in product]
+                                
+                                if not product_missing_fields:
+                                    self.log_test("Get Wishlist Items", True, f"Retrieved {len(wishlist_items)} wishlist items with full product details")
+                                    return True
+                                else:
+                                    self.log_test("Get Wishlist Items", False, f"Missing product fields in wishlist: {product_missing_fields}")
+                                    return False
+                            else:
+                                self.log_test("Get Wishlist Items", False, "Product details not included in wishlist response")
+                                return False
+                        else:
+                            self.log_test("Get Wishlist Items", False, f"Missing wishlist item fields: {missing_fields}")
+                            return False
+                    else:
+                        self.log_test("Get Wishlist Items", True, "Empty wishlist (valid)")
+                        return True
+                else:
+                    self.log_test("Get Wishlist Items", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Get Wishlist Items", False, f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Get Wishlist Items", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_get_wishlist_count(self):
+        """Test GET /api/wishlist/count/{session_id} to get wishlist item count"""
+        print("🧪 Testing Get Wishlist Count...")
+        
+        try:
+            response = self.session.get(f"{API_BASE}/wishlist/count/{SESSION_ID}")
+            
+            if response.status_code == 200:
+                count_data = response.json()
+                if isinstance(count_data, dict) and 'count' in count_data:
+                    count = count_data['count']
+                    if isinstance(count, int) and count >= 0:
+                        self.log_test("Get Wishlist Count", True, f"Wishlist contains {count} items")
+                        return True
+                    else:
+                        self.log_test("Get Wishlist Count", False, f"Invalid count value: {count}")
+                        return False
+                else:
+                    self.log_test("Get Wishlist Count", False, "Invalid response format - missing 'count' field")
+                    return False
+            else:
+                self.log_test("Get Wishlist Count", False, f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Get Wishlist Count", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_remove_from_wishlist(self):
+        """Test DELETE /api/wishlist/{session_id}/{product_id} to remove specific items"""
+        print("🧪 Testing Remove Items from Wishlist...")
+        
+        if not self.sample_products:
+            self.log_test("Remove from Wishlist", False, "No sample products available for testing")
+            return False
+        
+        # Get current wishlist to find items to remove
+        try:
+            response = self.session.get(f"{API_BASE}/wishlist/{SESSION_ID}")
+            if response.status_code != 200:
+                self.log_test("Remove from Wishlist", False, "Could not retrieve current wishlist for removal test")
+                return False
+            
+            wishlist_items = response.json()
+            if not wishlist_items:
+                self.log_test("Remove from Wishlist", True, "No items in wishlist to remove (valid)")
+                return True
+            
+            # Remove the first item from wishlist
+            product_id = wishlist_items[0]['product']['id']
+            
+            response = self.session.delete(f"{API_BASE}/wishlist/{SESSION_ID}/{product_id}")
+            
+            if response.status_code == 200:
+                result = response.json()
+                if isinstance(result, dict) and 'message' in result:
+                    # Verify item was actually removed by checking wishlist again
+                    verify_response = self.session.get(f"{API_BASE}/wishlist/{SESSION_ID}")
+                    if verify_response.status_code == 200:
+                        updated_wishlist = verify_response.json()
+                        # Check that the removed product is no longer in wishlist
+                        removed_product_still_exists = any(
+                            item['product']['id'] == product_id for item in updated_wishlist
+                        )
+                        
+                        if not removed_product_still_exists:
+                            self.log_test("Remove from Wishlist", True, f"Successfully removed product {product_id[:8]}... from wishlist")
+                            return True
+                        else:
+                            self.log_test("Remove from Wishlist", False, "Product still exists in wishlist after removal")
+                            return False
+                    else:
+                        self.log_test("Remove from Wishlist", False, "Could not verify removal")
+                        return False
+                else:
+                    self.log_test("Remove from Wishlist", False, "Invalid response format - missing confirmation message")
+                    return False
+            else:
+                self.log_test("Remove from Wishlist", False, f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Remove from Wishlist", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_clear_wishlist(self):
+        """Test DELETE /api/wishlist/clear/{session_id} to clear entire wishlist"""
+        print("🧪 Testing Clear Entire Wishlist...")
+        
+        try:
+            response = self.session.delete(f"{API_BASE}/wishlist/clear/{SESSION_ID}")
+            
+            if response.status_code == 200:
+                result = response.json()
+                if isinstance(result, dict) and 'message' in result:
+                    # Verify wishlist is actually empty
+                    verify_response = self.session.get(f"{API_BASE}/wishlist/{SESSION_ID}")
+                    if verify_response.status_code == 200:
+                        wishlist_items = verify_response.json()
+                        if isinstance(wishlist_items, list) and len(wishlist_items) == 0:
+                            self.log_test("Clear Wishlist", True, "Successfully cleared entire wishlist")
+                            return True
+                        else:
+                            self.log_test("Clear Wishlist", False, f"Wishlist still contains {len(wishlist_items)} items after clearing")
+                            return False
+                    else:
+                        self.log_test("Clear Wishlist", False, "Could not verify wishlist clearing")
+                        return False
+                else:
+                    self.log_test("Clear Wishlist", False, "Invalid response format - missing confirmation message")
+                    return False
+            else:
+                self.log_test("Clear Wishlist", False, f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Clear Wishlist", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_wishlist_duplicate_prevention(self):
+        """Test that adding duplicate items to wishlist is handled correctly"""
+        print("🧪 Testing Wishlist Duplicate Prevention...")
+        
+        if not self.sample_products:
+            self.log_test("Wishlist Duplicate Prevention", False, "No sample products available for testing")
+            return False
+        
+        # First, clear wishlist to start fresh
+        self.session.delete(f"{API_BASE}/wishlist/clear/{SESSION_ID}")
+        
+        product_id = self.sample_products[0]['id']
+        wishlist_item = {
+            "session_id": SESSION_ID,
+            "product_id": product_id
+        }
+        
+        try:
+            # Add item first time - should succeed
+            response1 = self.session.post(f"{API_BASE}/wishlist", json=wishlist_item)
+            
+            if response1.status_code != 200:
+                self.log_test("Wishlist Duplicate Prevention", False, "Failed to add item to wishlist initially")
+                return False
+            
+            # Try to add same item again - should fail with appropriate error
+            response2 = self.session.post(f"{API_BASE}/wishlist", json=wishlist_item)
+            
+            if response2.status_code == 400:
+                error_data = response2.json()
+                if 'detail' in error_data and 'already in wishlist' in error_data['detail'].lower():
+                    self.log_test("Wishlist Duplicate Prevention", True, "Correctly prevented duplicate wishlist items")
+                    return True
+                else:
+                    self.log_test("Wishlist Duplicate Prevention", False, f"Wrong error message for duplicate: {error_data}")
+                    return False
+            else:
+                self.log_test("Wishlist Duplicate Prevention", False, f"Expected HTTP 400 for duplicate, got {response2.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Wishlist Duplicate Prevention", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_wishlist_nonexistent_product(self):
+        """Test adding non-existent product to wishlist"""
+        print("🧪 Testing Wishlist with Non-existent Product...")
+        
+        fake_product_id = "non-existent-product-id-12345"
+        wishlist_item = {
+            "session_id": SESSION_ID,
+            "product_id": fake_product_id
+        }
+        
+        try:
+            response = self.session.post(f"{API_BASE}/wishlist", json=wishlist_item)
+            
+            if response.status_code == 404:
+                error_data = response.json()
+                if 'detail' in error_data and 'not found' in error_data['detail'].lower():
+                    self.log_test("Wishlist Non-existent Product", True, "Correctly rejected non-existent product")
+                    return True
+                else:
+                    self.log_test("Wishlist Non-existent Product", False, f"Wrong error message: {error_data}")
+                    return False
+            else:
+                self.log_test("Wishlist Non-existent Product", False, f"Expected HTTP 404, got {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Wishlist Non-existent Product", False, f"Request failed: {str(e)}")
+            return False
+
     def run_enhanced_test_suite(self):
         """Run the complete enhanced StyleHub API test suite"""
         print(f"🚀 Starting Comprehensive StyleHub Enhanced API Testing")
