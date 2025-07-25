@@ -30,8 +30,14 @@ api_router = APIRouter(prefix="/api")
 # Enums
 class ClothingCategory(str, Enum):
     MENS_SHIRTS = "mens_shirts"
-    WOMENS_DRESSES = "womens_dresses"
+    MENS_TSHIRTS = "mens_tshirts"
     MENS_PANTS = "mens_pants"
+    MENS_JEANS = "mens_jeans"
+    MENS_BLAZERS = "mens_blazers"
+    MENS_CASUAL = "mens_casual"
+    MENS_FORMAL = "mens_formal"
+    MENS_SPORTSWEAR = "mens_sportswear"
+    WOMENS_DRESSES = "womens_dresses"
     WOMENS_TOPS = "womens_tops"
     CASUAL_WEAR = "casual_wear"
     FORMAL_WEAR = "formal_wear"
