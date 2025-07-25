@@ -228,22 +228,52 @@ const Header = ({ currentView, setCurrentView }) => {
             </button>
           </nav>
 
-          {/* Search Bar */}
-          <div className={`hidden md:flex items-center border-2 rounded-sm transition-colors ${
-            isSearchFocused ? 'border-pink-500' : 'border-gray-200'
-          }`}>
-            <div className="flex items-center px-3 py-2 bg-gray-50">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <input
-              type="text"
-              placeholder="Search for products, brands and more"
-              className="px-3 py-2 w-80 text-sm bg-gray-50 focus:outline-none"
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => setIsSearchFocused(false)}
-            />
+          {/* Enhanced Search Bar */}
+          <div className="relative hidden md:flex items-center">
+            <form onSubmit={handleSearchSubmit} className="relative">
+              <div className={`flex items-center border-2 rounded-lg transition-all duration-300 ${
+                isSearchFocused ? 'border-pink-500 shadow-lg' : 'border-gray-200'
+              }`}>
+                <div className="flex items-center px-4 py-3 bg-gray-50 rounded-l-lg">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  placeholder="Search for products, brands and more"
+                  className="px-4 py-3 w-96 text-sm bg-gray-50 focus:outline-none rounded-r-lg"
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => {
+                    // Delay hiding suggestions to allow clicks
+                    setTimeout(() => {
+                      setIsSearchFocused(false);
+                      setShowSuggestions(false);
+                    }, 200);
+                  }}
+                />
+              </div>
+              
+              {/* Search Suggestions Dropdown */}
+              {showSuggestions && searchSuggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-1 max-h-64 overflow-y-auto">
+                  {searchSuggestions.map((suggestion, index) => (
+                    <div
+                      key={index}
+                      onClick={() => handleSuggestionClick(suggestion)}
+                      className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 flex items-center"
+                    >
+                      <svg className="w-4 h-4 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <span className="text-sm text-gray-700">{suggestion}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </form>
           </div>
 
           {/* User Actions */}
