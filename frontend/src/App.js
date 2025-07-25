@@ -243,12 +243,11 @@ const Header = ({ currentView, setCurrentView }) => {
 
         {/* Mobile Navigation */}
         <div className="lg:hidden px-4 pb-3">
-          <div className="flex overflow-x-auto space-x-6 text-sm font-medium">
-            <button className="text-gray-800 whitespace-nowrap" onClick={() => setCurrentView('men')}>MEN</button>
-            <button className="text-gray-800 whitespace-nowrap" onClick={() => setCurrentView('women')}>WOMEN</button>
-            <button className="text-gray-800 whitespace-nowrap" onClick={() => setCurrentView('kids')}>KIDS</button>
-            <button className="text-gray-800 whitespace-nowrap" onClick={() => setCurrentView('home-living')}>HOME</button>
-            <button className="text-gray-800 whitespace-nowrap" onClick={() => setCurrentView('beauty')}>BEAUTY</button>
+          <div className="flex overflow-x-auto space-x-8 text-sm font-medium">
+            <button className="text-gray-800 whitespace-nowrap font-bold" onClick={() => setCurrentView('men')}>MEN</button>
+            <button className="text-gray-800 whitespace-nowrap font-bold" onClick={() => setCurrentView('women')}>WOMEN</button>
+            <button className="text-gray-800 whitespace-nowrap font-bold" onClick={() => setCurrentView('brands')}>BRANDS</button>
+            <button className="text-gray-800 whitespace-nowrap font-bold" onClick={() => setCurrentView('sale')}>SALE</button>
           </div>
         </div>
       </div>
