@@ -217,6 +217,48 @@ class OrderCreate(BaseModel):
     customer_email: str
     shipping_address: str
 
+# User Profile Models
+class UserProfile(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    session_id: str
+    name: str
+    email: str
+    phone: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    gender: Optional[str] = None
+    addresses: List[dict] = Field(default_factory=list)
+    preferences: dict = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class UserProfileCreate(BaseModel):
+    session_id: str
+    name: str
+    email: str
+    phone: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    gender: Optional[str] = None
+
+class UserProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    gender: Optional[str] = None
+    addresses: Optional[List[dict]] = None
+    preferences: Optional[dict] = None
+
+# Wishlist Models
+class WishlistItem(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    session_id: str
+    product_id: str
+    added_at: datetime = Field(default_factory=datetime.utcnow)
+
+class WishlistItemCreate(BaseModel):
+    session_id: str
+    product_id: str
+
 # Product routes
 @api_router.get("/products/women", response_model=List[Product])
 async def get_womens_products(
