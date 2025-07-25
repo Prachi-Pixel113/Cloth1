@@ -100,6 +100,91 @@ const useCart = () => {
   return context;
 };
 
+// Wishlist Context
+const WishlistContext = createContext();
+
+const WishlistProvider = ({ children }) => {
+  const [wishlistItems, setWishlistItems] = useState([]);
+  const [sessionId] = useState(() => {
+    let id = localStorage.getItem('sessionId');
+    if (!id) {
+      id = 'session_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('sessionId', id);
+    }
+    return id;
+  });
+
+  const fetchWishlist = async () => {
+    try {
+      const response = await axios.get(`${API}/wishlist/${sessionId}`);
+      setWishlistItems(response.data);
+    } catch (error) {
+      console.error('Error fetching wishlist:', error);
+    }
+  };
+
+  const addToWishlist = async (productId) => {
+    try {
+      await axios.post(`${API}/wishlist`, {
+        product_id: productId,
+        session_id: sessionId
+      });
+      fetchWishlist();
+      return true;
+    } catch (error) {
+      if (error.response?.status === 400) {
+        console.log('Product already in wishlist');
+        return false;
+      }
+      console.error('Error adding to wishlist:', error);
+      return false;
+    }
+  };
+
+  const removeFromWishlist = async (productId) => {
+    try {
+      await axios.delete(`${API}/wishlist/${sessionId}/${productId}`);
+      fetchWishlist();
+      return true;
+    } catch (error) {
+      console.error('Error removing from wishlist:', error);
+      return false;
+    }
+  };
+
+  const isInWishlist = (productId) => {
+    return wishlistItems.some(item => item.product.id === productId);
+  };
+
+  const wishlistTotal = wishlistItems.length;
+
+  useEffect(() => {
+    fetchWishlist();
+  }, []);
+
+  return (
+    <WishlistContext.Provider value={{
+      wishlistItems,
+      sessionId,
+      addToWishlist,
+      removeFromWishlist,
+      isInWishlist,
+      wishlistTotal,
+      fetchWishlist
+    }}>
+      {children}
+    </WishlistContext.Provider>
+  );
+};
+
+const useWishlist = () => {
+  const context = useContext(WishlistContext);
+  if (!context) {
+    throw new Error('useWishlist must be used within a WishlistProvider');
+  }
+  return context;
+};
+
 // Myntra-style Header
 const Header = ({ currentView, setCurrentView }) => {
   const { cartTotal } = useCart();
