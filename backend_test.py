@@ -550,6 +550,283 @@ class StyleHubEnhancedAPITester:
             self.log_test("Mark Review Helpful", False, f"Request failed: {str(e)}")
             return False
 
+    # ========== MEN'S SECTION TESTS ==========
+    def test_mens_products_endpoint(self):
+        """Test GET /api/products/men endpoint with various filters"""
+        print("🧪 Testing Men's Products Endpoint...")
+        
+        # Test 1: Get all men's products
+        try:
+            response = self.session.get(f"{API_BASE}/products/men")
+            
+            if response.status_code == 200:
+                products = response.json()
+                if isinstance(products, list):
+                    mens_categories = ["mens_shirts", "mens_tshirts", "mens_pants", "mens_jeans", 
+                                     "mens_blazers", "mens_casual", "mens_formal", "mens_sportswear"]
+                    
+                    if products:
+                        # Verify all products are men's categories
+                        all_mens_products = all(p.get('category') in mens_categories for p in products)
+                        if all_mens_products:
+                            self.log_test("Men's Products (All)", True, f"Found {len(products)} men's products")
+                        else:
+                            self.log_test("Men's Products (All)", False, "Some products are not men's categories")
+                            return False
+                    else:
+                        self.log_test("Men's Products (All)", True, "No men's products found (valid)")
+                else:
+                    self.log_test("Men's Products (All)", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Men's Products (All)", False, f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Men's Products (All)", False, f"Request failed: {str(e)}")
+            return False
+        
+        return True
+
+    def test_mens_products_category_filter(self):
+        """Test GET /api/products/men with specific category filtering"""
+        print("🧪 Testing Men's Products Category Filtering...")
+        
+        mens_categories_to_test = ["mens_shirts", "mens_tshirts", "mens_jeans", "mens_formal"]
+        
+        for category in mens_categories_to_test:
+            try:
+                response = self.session.get(f"{API_BASE}/products/men", params={"category": category})
+                
+                if response.status_code == 200:
+                    products = response.json()
+                    if isinstance(products, list):
+                        if products:
+                            all_correct_category = all(p.get('category') == category for p in products)
+                            if all_correct_category:
+                                self.log_test(f"Men's Category Filter ({category})", True, f"Found {len(products)} products in {category}")
+                            else:
+                                self.log_test(f"Men's Category Filter ({category})", False, f"Some products don't match {category}")
+                                return False
+                        else:
+                            self.log_test(f"Men's Category Filter ({category})", True, f"No products in {category} (valid)")
+                    else:
+                        self.log_test(f"Men's Category Filter ({category})", False, "Invalid response format")
+                        return False
+                else:
+                    self.log_test(f"Men's Category Filter ({category})", False, f"HTTP {response.status_code}: {response.text}")
+                    return False
+                    
+            except Exception as e:
+                self.log_test(f"Men's Category Filter ({category})", False, f"Request failed: {str(e)}")
+                return False
+        
+        return True
+
+    def test_mens_products_price_filter(self):
+        """Test GET /api/products/men with price range filtering"""
+        print("🧪 Testing Men's Products Price Filtering...")
+        
+        price_ranges = [
+            {"min_price": 20.0, "max_price": 50.0, "name": "Budget Range"},
+            {"min_price": 50.0, "max_price": 100.0, "name": "Mid Range"},
+            {"min_price": 100.0, "name": "Premium Range"}
+        ]
+        
+        for price_range in price_ranges:
+            try:
+                params = {}
+                if "min_price" in price_range:
+                    params["min_price"] = price_range["min_price"]
+                if "max_price" in price_range:
+                    params["max_price"] = price_range["max_price"]
+                
+                response = self.session.get(f"{API_BASE}/products/men", params=params)
+                
+                if response.status_code == 200:
+                    products = response.json()
+                    if isinstance(products, list):
+                        if products:
+                            # Verify all products are within price range
+                            valid_prices = True
+                            for product in products:
+                                price = product.get('price', 0)
+                                if "min_price" in price_range and price < price_range["min_price"]:
+                                    valid_prices = False
+                                    break
+                                if "max_price" in price_range and price > price_range["max_price"]:
+                                    valid_prices = False
+                                    break
+                            
+                            if valid_prices:
+                                self.log_test(f"Men's Price Filter ({price_range['name']})", True, f"Found {len(products)} products in price range")
+                            else:
+                                self.log_test(f"Men's Price Filter ({price_range['name']})", False, "Some products outside price range")
+                                return False
+                        else:
+                            self.log_test(f"Men's Price Filter ({price_range['name']})", True, f"No products in {price_range['name']} (valid)")
+                    else:
+                        self.log_test(f"Men's Price Filter ({price_range['name']})", False, "Invalid response format")
+                        return False
+                else:
+                    self.log_test(f"Men's Price Filter ({price_range['name']})", False, f"HTTP {response.status_code}: {response.text}")
+                    return False
+                    
+            except Exception as e:
+                self.log_test(f"Men's Price Filter ({price_range['name']})", False, f"Request failed: {str(e)}")
+                return False
+        
+        return True
+
+    def test_mens_products_sorting(self):
+        """Test GET /api/products/men with different sorting options"""
+        print("🧪 Testing Men's Products Sorting...")
+        
+        sort_options = ["featured", "price_low", "price_high", "popularity", "rating", "newest"]
+        
+        for sort_by in sort_options:
+            try:
+                response = self.session.get(f"{API_BASE}/products/men", params={"sort_by": sort_by, "limit": 10})
+                
+                if response.status_code == 200:
+                    products = response.json()
+                    if isinstance(products, list):
+                        if len(products) >= 2:
+                            # Verify sorting is working
+                            sorted_correctly = True
+                            for i in range(len(products) - 1):
+                                current = products[i]
+                                next_product = products[i + 1]
+                                
+                                if sort_by == "price_low":
+                                    if current.get('price', 0) > next_product.get('price', 0):
+                                        sorted_correctly = False
+                                        break
+                                elif sort_by == "price_high":
+                                    if current.get('price', 0) < next_product.get('price', 0):
+                                        sorted_correctly = False
+                                        break
+                                elif sort_by == "rating":
+                                    if current.get('average_rating', 0) < next_product.get('average_rating', 0):
+                                        sorted_correctly = False
+                                        break
+                                elif sort_by == "featured":
+                                    # Featured products should come first
+                                    if not current.get('featured', False) and next_product.get('featured', False):
+                                        sorted_correctly = False
+                                        break
+                            
+                            if sorted_correctly:
+                                self.log_test(f"Men's Sorting ({sort_by})", True, f"Products sorted correctly by {sort_by}")
+                            else:
+                                self.log_test(f"Men's Sorting ({sort_by})", False, f"Products not sorted correctly by {sort_by}")
+                                return False
+                        else:
+                            self.log_test(f"Men's Sorting ({sort_by})", True, f"Insufficient products to verify {sort_by} sorting (valid)")
+                    else:
+                        self.log_test(f"Men's Sorting ({sort_by})", False, "Invalid response format")
+                        return False
+                else:
+                    self.log_test(f"Men's Sorting ({sort_by})", False, f"HTTP {response.status_code}: {response.text}")
+                    return False
+                    
+            except Exception as e:
+                self.log_test(f"Men's Sorting ({sort_by})", False, f"Request failed: {str(e)}")
+                return False
+        
+        return True
+
+    def test_mens_products_brand_filter(self):
+        """Test GET /api/products/men with brand filtering"""
+        print("🧪 Testing Men's Products Brand Filtering...")
+        
+        if not self.sample_brands:
+            self.log_test("Men's Brand Filter", False, "No sample brands available for testing")
+            return False
+        
+        # Test with first available brand
+        brand_id = self.sample_brands[0]['id']
+        
+        try:
+            response = self.session.get(f"{API_BASE}/products/men", params={"brand_id": brand_id})
+            
+            if response.status_code == 200:
+                products = response.json()
+                if isinstance(products, list):
+                    if products:
+                        # Verify all products belong to the brand and are men's products
+                        mens_categories = ["mens_shirts", "mens_tshirts", "mens_pants", "mens_jeans", 
+                                         "mens_blazers", "mens_casual", "mens_formal", "mens_sportswear"]
+                        
+                        all_correct_brand = all(p.get('brand_id') == brand_id for p in products)
+                        all_mens_products = all(p.get('category') in mens_categories for p in products)
+                        
+                        if all_correct_brand and all_mens_products:
+                            self.log_test("Men's Brand Filter", True, f"Found {len(products)} men's products for brand")
+                        else:
+                            if not all_correct_brand:
+                                self.log_test("Men's Brand Filter", False, "Some products don't belong to the requested brand")
+                            else:
+                                self.log_test("Men's Brand Filter", False, "Some products are not men's categories")
+                            return False
+                    else:
+                        self.log_test("Men's Brand Filter", True, "No men's products found for brand (valid)")
+                else:
+                    self.log_test("Men's Brand Filter", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Men's Brand Filter", False, f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Men's Brand Filter", False, f"Request failed: {str(e)}")
+            return False
+        
+        return True
+
+    def test_verify_mens_sample_data(self):
+        """Verify that sample data includes men's products with correct categories"""
+        print("🧪 Testing Men's Sample Data Verification...")
+        
+        try:
+            response = self.session.get(f"{API_BASE}/products")
+            
+            if response.status_code == 200:
+                all_products = response.json()
+                if isinstance(all_products, list):
+                    mens_categories = ["mens_shirts", "mens_tshirts", "mens_pants", "mens_jeans", 
+                                     "mens_blazers", "mens_casual", "mens_formal", "mens_sportswear"]
+                    
+                    # Count products in each men's category
+                    category_counts = {}
+                    for category in mens_categories:
+                        category_counts[category] = len([p for p in all_products if p.get('category') == category])
+                    
+                    total_mens_products = sum(category_counts.values())
+                    categories_with_products = [cat for cat, count in category_counts.items() if count > 0]
+                    
+                    if total_mens_products > 0:
+                        details = f"Total men's products: {total_mens_products}, Categories with products: {len(categories_with_products)}"
+                        for cat, count in category_counts.items():
+                            if count > 0:
+                                details += f", {cat}: {count}"
+                        
+                        self.log_test("Men's Sample Data Verification", True, details)
+                        return True
+                    else:
+                        self.log_test("Men's Sample Data Verification", False, "No men's products found in sample data")
+                        return False
+                else:
+                    self.log_test("Men's Sample Data Verification", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Men's Sample Data Verification", False, f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Men's Sample Data Verification", False, f"Request failed: {str(e)}")
+            return False
+
     # ========== BASIC ECOMMERCE TESTS (EXISTING) ==========
     def test_get_products_by_category(self):
         """Test GET /api/products with category filtering"""
