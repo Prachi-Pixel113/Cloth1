@@ -369,6 +369,7 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Wishlist Icon Integration Across All Collections"
     - "Men's Section Hero Banner"
     - "Men's Product Filters"
     - "Men's Product Cards with Badges and Hover Effects"
