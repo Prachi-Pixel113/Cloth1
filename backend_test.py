@@ -1076,6 +1076,14 @@ class StyleHubEnhancedAPITester:
             ("Individual Brand Retrieval", self.test_get_individual_brand),
             ("Brand Products", self.test_get_brand_products),
             
+            # Men's Section Tests
+            ("Men's Products Endpoint", self.test_mens_products_endpoint),
+            ("Men's Category Filtering", self.test_mens_products_category_filter),
+            ("Men's Price Filtering", self.test_mens_products_price_filter),
+            ("Men's Sorting Options", self.test_mens_products_sorting),
+            ("Men's Brand Filtering", self.test_mens_products_brand_filter),
+            ("Men's Sample Data Verification", self.test_verify_mens_sample_data),
+            
             # Enhanced search
             ("Enhanced Search API", self.test_enhanced_search_api),
             ("Search Suggestions", self.test_search_suggestions),
